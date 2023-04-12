@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  blogservice:
+    image: ${DOCKER_REGISTRY-}blogservice
+    build:
+      context: .
+      dockerfile: BlogService/Dockerfile
+    environment:
+      DB_CONNECTION_STRING: Server=database;Database=authentication;User=sa;Password=P@ssword;TrustServerCertificate=True;
+
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=P@ssword
+    ports:
+      - "1433:1433"
+    volumes:
+      - "blog-service:/var/opt/mssql"
+
+volumes:
+  blog-service:
