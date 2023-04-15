@@ -7,10 +7,10 @@ services:
       context: .
       dockerfile: BlogService/Dockerfile
     environment:
-      DB_CONNECTION_STRING: Server=database;Database=authentication;User=sa;Password=P@ssword;TrustServerCertificate=True;
+      DB_CONNECTION_STRING: Server=blog-database;Database=authentication;User=sa;Password=P@ssword;TrustServerCertificate=True;
 
-  database:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  blog-database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=P@ssword

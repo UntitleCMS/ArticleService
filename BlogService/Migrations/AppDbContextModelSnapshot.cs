@@ -24,17 +24,38 @@ namespace BlogService.Migrations
 
             modelBuilder.Entity("BlogService.Entity.PostEntity", b =>
                 {
-                    b.Property<Guid>("ID")
+                    b.Property<Guid>("PostID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Contest")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("GETDATE()");
+
+                    b.Property<string>("OwnerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("posts");
+                    b.HasKey("PostID");
+
+                    b.ToTable("Posts");
                 });
 #pragma warning restore 612, 618
         }
