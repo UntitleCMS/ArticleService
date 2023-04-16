@@ -5,10 +5,10 @@ namespace BlogService.Entity
     public class TimestampEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime LastUpdated { get; set; }
+        public DateTime LastUpdated { get; }
 
     }
 }
