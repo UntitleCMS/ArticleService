@@ -1,4 +1,5 @@
 using BlogService.Data;
+using BlogService.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add MyServide
+builder.Services.AddMyService();
 
 // Get connection string 
 string? DB_CONNECTION_STRING
