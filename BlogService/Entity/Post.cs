@@ -4,19 +4,13 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace BlogService.Entity
 {
-    public class PostEntity
+    public class Post : TimestampEntity
     {
         [Key]
         public Guid PostID { get; set; }
 
         [Required]
         public string OwnerID { get; set; } = string.Empty;
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedAt { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime LastUpdated { get; set; } 
 
         [Required]
         public string PostTitle { get; set; } = string.Empty;
@@ -26,5 +20,11 @@ namespace BlogService.Entity
 
         [Required]
         public string Contest { get; set; } = string.Empty;
+
+        public bool IsPublished { get; set; }  = false;
+
+        public ICollection<Tag>? Tags { get; set; }
+
+        public ICollection<Comment>? Comments { get; set; }
     }
 }

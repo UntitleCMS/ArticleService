@@ -22,7 +22,7 @@ namespace BlogService.Controllers
         [HttpGet("Add")]
         public IActionResult AddCollumn()
         {
-            var data = new PostEntity()
+            var data = new Post()
             {
                 OwnerID = "97f16679-1a2b-4a23-9b7a-3c3bc8c54f3d",
                 PostID = Guid.NewGuid(), 
