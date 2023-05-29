@@ -1,5 +1,5 @@
-﻿using BlogService.Data;
-using BlogService.Entity;
+﻿using Infrastructure.Data;
+using Domain.Entity;
 using BlogService.Services.PostServices.Interfaces;
 
 namespace BlogService.Services.PostServices

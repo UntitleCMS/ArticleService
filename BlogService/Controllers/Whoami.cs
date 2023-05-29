@@ -8,12 +8,12 @@ using OpenIddict.Validation.AspNetCore;
 
 namespace AuthenticationService.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    //[Route("api/[controller]")]
+    //[ApiController]
+    //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public class Whoami : ControllerBase
     {
-        [HttpGet]
+        //[HttpGet]
         public async Task<IActionResult> ME()
         {
             return Ok(new

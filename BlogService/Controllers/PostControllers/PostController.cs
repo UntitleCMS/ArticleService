@@ -1,5 +1,5 @@
-﻿using BlogService.Data;
-using BlogService.Entity;
+﻿using Infrastructure.Data;
+using Domain.Entity;
 using BlogService.Services.PostServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,8 +9,8 @@ using OpenIddict.Validation.AspNetCore;
 namespace BlogService.Controllers.PostControllers
 {
 
-    [Route("[controller]")]
-    [ApiController]
+    //[Route("[controller]")]
+    //[ApiController]
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
@@ -20,15 +20,15 @@ namespace BlogService.Controllers.PostControllers
             _postService = postService;
         }
 
-        [HttpGet("/posts")]
-        [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+        //[HttpGet("/posts")]
+        //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
         public IActionResult GetPosts()
         {
             var posts = _postService.GetPosts();
             return Ok(posts);
         }
 
-        [HttpGet("{postId}")]
+        //[HttpGet("{postId}")]
         public IActionResult GetPost([FromRoute()] Guid postId)
         {
             var post = _postService.GetPost(postId);
@@ -37,24 +37,24 @@ namespace BlogService.Controllers.PostControllers
             return Ok(post);
         }
 
-        [HttpPost]
-        [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+        //[HttpPost]
+        //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
         public IActionResult AddPost([FromBody] Post post)
         {
             _postService.AddPost(post);
             return NoContent();
         }
 
-        [HttpPut]
-        [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+        //[HttpPut]
+        //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
         public IActionResult UpdatePost([FromBody] Post post)
         {
             _postService.UpdatePost(post);
             return NoContent();
         }
 
-        [HttpDelete("{postId}")]
-        [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+        //[HttpDelete("{postId}")]
+        //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
         public IActionResult DeletePost([FromRoute()] Guid postId)
         {
             var post = _postService.GetPost(postId);

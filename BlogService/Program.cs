@@ -1,8 +1,8 @@
 using AuthenticationService;
-using BlogService.Data;
+using Infrastructure.Data;
 using BlogService.Services;
+using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using OpenIddict.Validation.SystemNetHttp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +15,7 @@ builder.Services
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
     });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,9 +32,15 @@ string? DB_CONNECTION_STRING
 var AssamblyName = typeof(Program).Assembly.GetName().Name;
 
 // Add DB context
-builder.Services.AddDbContext<AppDbContext>(options =>
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//{
+//    options.UseSqlServer(DB_CONNECTION_STRING, opt => opt.MigrationsAssembly(AssamblyName));
+//});
+
+///////////////////////////
+builder.Services.AddInfrastructure(option =>
 {
-    options.UseSqlServer(DB_CONNECTION_STRING, opt=>opt.MigrationsAssembly(AssamblyName));
+    option.AddDbConnectionString(DB_CONNECTION_STRING);
 });
 
 // Add CORS

@@ -1,4 +1,4 @@
-﻿using BlogService.Entity;
+﻿using Domain.Entity;
 
 namespace BlogService.Services.PostServices.Interfaces
 {

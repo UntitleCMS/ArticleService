@@ -1,8 +1,8 @@
-﻿using BlogService.Entity;
+﻿using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Xml;
 
-namespace BlogService.Data
+namespace Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {
