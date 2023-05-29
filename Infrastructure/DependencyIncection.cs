@@ -20,7 +20,11 @@ namespace Infrastructure
 
             service.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlServer(Options.DbConnectionString);
+                options.UseSqlServer
+                (
+                    Options.DbConnectionString,
+                    opt=>opt.MigrationsAssembly(Options.DbMigrationAssembly)
+                );
             });
         }
     }
@@ -39,6 +43,13 @@ namespace Infrastructure
             return this;
         }
 
+        public InfrastructureOptionBuilder AddDbMigrationAssembly(string? dbMigrationAssembly)
+        { 
+            opt.DbMigrationAssembly = dbMigrationAssembly;
+            return this;
+        }
+
+
         public InfrastructureOption Build()
         {
             return opt;
@@ -47,6 +58,7 @@ namespace Infrastructure
     public class InfrastructureOption
     {
         public string? DbConnectionString { get; set; }
+        public string? DbMigrationAssembly { get; set; }
     }
 
 }

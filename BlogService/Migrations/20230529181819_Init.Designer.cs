@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230416042054_InitDB")]
-    partial class InitDB
+    [Migration("20230529181819_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace BlogService.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BlogService.Entity.Comment", b =>
+            modelBuilder.Entity("Domain.Entity.Comment", b =>
                 {
                     b.Property<Guid>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -55,7 +55,7 @@ namespace BlogService.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("BlogService.Entity.Post", b =>
+            modelBuilder.Entity("Domain.Entity.Post", b =>
                 {
                     b.Property<Guid>("PostID")
                         .ValueGeneratedOnAdd()
@@ -94,7 +94,7 @@ namespace BlogService.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("BlogService.Entity.Tag", b =>
+            modelBuilder.Entity("Domain.Entity.Tag", b =>
                 {
                     b.Property<int>("TagId")
                         .ValueGeneratedOnAdd()
@@ -132,9 +132,9 @@ namespace BlogService.Migrations
                     b.ToTable("PostTag");
                 });
 
-            modelBuilder.Entity("BlogService.Entity.Comment", b =>
+            modelBuilder.Entity("Domain.Entity.Comment", b =>
                 {
-                    b.HasOne("BlogService.Entity.Post", null)
+                    b.HasOne("Domain.Entity.Post", null)
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -143,20 +143,20 @@ namespace BlogService.Migrations
 
             modelBuilder.Entity("PostTag", b =>
                 {
-                    b.HasOne("BlogService.Entity.Post", null)
+                    b.HasOne("Domain.Entity.Post", null)
                         .WithMany()
                         .HasForeignKey("PostsPostID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlogService.Entity.Tag", null)
+                    b.HasOne("Domain.Entity.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsTagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BlogService.Entity.Post", b =>
+            modelBuilder.Entity("Domain.Entity.Post", b =>
                 {
                     b.Navigation("Comments");
                 });

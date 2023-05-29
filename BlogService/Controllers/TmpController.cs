@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace BlogService.Controllers
 {
 
-    //[Route("api/[controller]")]
-    //[ApiController]
+    [Route("api/[controller]")]
+    [ApiController]
     public class TmpController : ControllerBase
     {
 
@@ -19,7 +19,7 @@ namespace BlogService.Controllers
             _db = db;
         }
 
-        //[HttpGet("Add")]
+        [HttpGet("Add")]
         public IActionResult AddCollumn()
         {
             var data = new Post()
@@ -37,7 +37,7 @@ namespace BlogService.Controllers
             return Ok();
         }
 
-        //[HttpGet("First")]
+        [HttpGet("First")]
         public IActionResult First()
         {
             var data = _db.Posts.FirstOrDefault();
@@ -45,7 +45,7 @@ namespace BlogService.Controllers
             return Ok(data);
         }
 
-        //[HttpGet("Update")]
+        [HttpGet("Update")]
         public IActionResult EditCollumn()
         {
             var data = _db.Posts.FirstOrDefault(); 

@@ -40,7 +40,8 @@ var AssamblyName = typeof(Program).Assembly.GetName().Name;
 ///////////////////////////
 builder.Services.AddInfrastructure(option =>
 {
-    option.AddDbConnectionString(DB_CONNECTION_STRING);
+    option.AddDbConnectionString(DB_CONNECTION_STRING)
+          .AddDbMigrationAssembly(AssamblyName);
 });
 
 // Add CORS
