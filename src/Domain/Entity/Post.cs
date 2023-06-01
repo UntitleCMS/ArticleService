@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using Domain.Common;
 
-namespace BlogService.Entity
+namespace Domain.Entity
 {
     public class Post : TimestampEntity
     {
@@ -21,7 +22,7 @@ namespace BlogService.Entity
         [Required]
         public string Contest { get; set; } = string.Empty;
 
-        public bool IsPublished { get; set; }  = false;
+        public bool IsPublished { get; set; } = false;
 
         public ICollection<Tag>? Tags { get; set; }
 

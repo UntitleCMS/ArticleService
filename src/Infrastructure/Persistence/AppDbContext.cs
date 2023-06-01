@@ -1,10 +1,11 @@
-﻿using BlogService.Entity;
+﻿using Application.Common.Interfaces;
+using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Xml;
 
-namespace BlogService.Data
+namespace Infrastructure.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : DbContext, IAppDbContext
     {
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }

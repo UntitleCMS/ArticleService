@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Common;
 
-namespace BlogService.Entity
+namespace Domain.Entity
 {
     public class Comment : TimestampEntity
     {
@@ -13,6 +14,7 @@ namespace BlogService.Entity
 
         [ForeignKey("Posts")]
         public Guid PostId { get; set; }
+
         Post? Post { get; set; }
     }
 }
