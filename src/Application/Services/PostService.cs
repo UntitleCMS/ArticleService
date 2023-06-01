@@ -35,5 +35,19 @@ namespace Application.Services
             return post;
         }
 
+        public Post Update(Post post)
+        {
+            _context.Posts.Update(post);
+            _context.SaveChanges();
+            return post;
+        }
+
+        public void Delete(Guid id)
+        {
+            var p =_context.Posts.First(p => p.PostID == id);
+            _context.Posts.Remove(p);
+            _context.SaveChanges();
+        }
+
     }
 }

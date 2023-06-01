@@ -41,6 +41,7 @@ builder.Services.AddScoped<PostService>();
 
 // Add CORS
 builder.Services.AddCors();
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 builder.Services.AddMyOpendIddictConfiguration();
 
