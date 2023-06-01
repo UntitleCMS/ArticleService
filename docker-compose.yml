@@ -4,7 +4,7 @@ services:
   blogservice:
     image: ${DOCKER_REGISTRY-}blogservice
     build:
-      context: .
+      context: ./src
       dockerfile: BlogService/Dockerfile
     environment:
       DB_CONNECTION_STRING: Server=blog-database;Database=BlogService;User=sa;Password=P@ssword;TrustServerCertificate=True;

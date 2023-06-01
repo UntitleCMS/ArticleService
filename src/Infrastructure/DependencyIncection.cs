@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -23,9 +24,12 @@ namespace Infrastructure
                 options.UseSqlServer
                 (
                     Options.DbConnectionString,
-                    opt=>opt.MigrationsAssembly(Options.DbMigrationAssembly)
+                    opt=> opt.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
                 );
             });
+
+            service.AddScoped<IAppDbContext>(sp=>sp.GetRequiredService<AppDbContext>());
+
         }
     }
 

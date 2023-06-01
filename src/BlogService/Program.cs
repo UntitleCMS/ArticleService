@@ -1,8 +1,8 @@
 using AuthenticationService;
 using Infrastructure.Data;
-using BlogService.Services;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +20,6 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add MyServide
-builder.Services.AddMyService();
 
 // Get connection string 
 string? DB_CONNECTION_STRING
@@ -31,18 +29,15 @@ string? DB_CONNECTION_STRING
 // Get assambly name
 var AssamblyName = typeof(Program).Assembly.GetName().Name;
 
-// Add DB context
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//{
-//    options.UseSqlServer(DB_CONNECTION_STRING, opt => opt.MigrationsAssembly(AssamblyName));
-//});
-
-///////////////////////////
+// Add Infrastructure Layer
 builder.Services.AddInfrastructure(option =>
 {
     option.AddDbConnectionString(DB_CONNECTION_STRING)
           .AddDbMigrationAssembly(AssamblyName);
 });
+
+// Add Service
+builder.Services.AddScoped<PostService>();
 
 // Add CORS
 builder.Services.AddCors();

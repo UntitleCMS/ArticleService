@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domain.Entity
+namespace Domain.Common
 {
     public class TimestampEntity
     {

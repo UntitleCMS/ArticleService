@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Common;
 
 namespace Domain.Entity
 {
@@ -13,6 +14,7 @@ namespace Domain.Entity
 
         [ForeignKey("Posts")]
         public Guid PostId { get; set; }
+
         Post? Post { get; set; }
     }
 }
