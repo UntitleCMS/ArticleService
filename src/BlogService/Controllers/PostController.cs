@@ -1,7 +1,9 @@
-﻿using Application.Services;
+﻿using Application.Common.Dtos;
+using Application.Services.PostService;
 using Domain.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace BlogService.Controllers
@@ -21,7 +23,8 @@ namespace BlogService.Controllers
         [Route("~/api/posts")]
         public IActionResult AllPosts()
         {
-            return Ok(postService.AllPost());
+            var p = postService.AllPost();
+            return Ok(p.AsNoTracking());
         }
 
         [HttpGet]
@@ -32,17 +35,16 @@ namespace BlogService.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddPost(Post newPost)
+        public IActionResult AddPost(PostRequestAddDto newPost)
         {
-            postService.Add(newPost);
-            return Ok(newPost);
+            return Ok(postService.Add(newPost));
         }
 
         [HttpPut] 
         [Route("{postId}")]
         public IActionResult Update([FromRoute]Guid postId,[FromBody]Post post)
         {
-            post.PostID = postId;
+            post.ID = postId;
             postService.Update(post);
             return Ok(post);
         }
