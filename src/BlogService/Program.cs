@@ -3,6 +3,7 @@ using Infrastructure.Data;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Application.Services.PostService;
+using Application.Services.TagService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ builder.Services.AddInfrastructure(option =>
 
 // Add Service
 builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<TagServices>();
 
 // Add CORS
 builder.Services.AddCors();
