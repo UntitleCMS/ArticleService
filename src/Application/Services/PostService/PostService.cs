@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,10 +54,16 @@ namespace Application.Services.PostService
             return newPost;
         }
 
-        public Post Update(Post post)
+        public Post Update(Guid pid, PostRequestAmendDto post)
         {
-            var p = _context.Posts.Single(i => i.ID == post.ID);
-            p.PostTitle = DateTime.Now.ToString();
+            var p = _context.Posts.Single(i => i.ID == pid);
+
+            p.PostTitle = post.PostTitle;
+            p.Thumbnail = post.Thumbnail;
+            p.IsPublished = post.IsPublished;
+            p.Contest = post.Content;
+            p.Tags = _context.Tags.Where(t=>post.Tags.Contains(t.ID)).ToList();
+
             _context.Posts.Update(p);
             _context.SaveChanges();
             return p;

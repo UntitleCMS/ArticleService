@@ -42,11 +42,18 @@ namespace BlogService.Controllers
 
         [HttpPut] 
         [Route("{postId}")]
-        public IActionResult Update([FromRoute]Guid postId,[FromBody]Post post)
+        public IActionResult Update([FromRoute]Guid postId,[FromBody]PostRequestAmendDto post)
         {
-            post.ID = postId;
-            postService.Update(post);
+            postService.Update(postId, post);
             return Ok(post);
+        }
+
+        [HttpDelete]
+        [Route("{postId}")]
+        public IActionResult Delete(Guid postId)
+        {
+            postService.Delete(postId);
+            return NoContent();
         }
     }
 }
