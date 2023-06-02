@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Common.Dtos
+namespace Application.Services.PostService.Dtos
 {
     public class PostRequestAddDto
     {

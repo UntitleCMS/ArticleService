@@ -1,5 +1,5 @@
-﻿using Application.Common.Dtos;
-using Application.Services.PostService;
+﻿using Application.Services.PostService;
+using Application.Services.PostService.Dtos;
 using Domain.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

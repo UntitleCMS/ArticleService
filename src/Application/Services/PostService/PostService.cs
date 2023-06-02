@@ -1,5 +1,5 @@
-﻿using Application.Common.Dtos;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
+using Application.Services.PostService.Dtos;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
