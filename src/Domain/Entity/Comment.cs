@@ -4,10 +4,10 @@ using Domain.Common;
 
 namespace Domain.Entity
 {
-    public class Comment : TimestampEntity
+    public class Comment : TimestampEntity<Guid>
     {
-        [Key]
-        public Guid CommentId { get; set; }
+        //[Key]
+        //public Guid ID { get; set; }
 
         [Required]
         public string Content { get; set; } = string.Empty;

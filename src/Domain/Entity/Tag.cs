@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entity
 {
-    public class Tag
+    public class Tag : BaseEntity<int>
     {
-        [Key]
-        public int TagId { get; set; }
+        //[Key]
+        //public int ID { get; set; }
 
         [StringLength(20)]
         [Required]

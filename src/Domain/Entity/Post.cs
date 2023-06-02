@@ -5,10 +5,10 @@ using Domain.Common;
 
 namespace Domain.Entity
 {
-    public class Post : TimestampEntity
+    public class Post : TimestampEntity<Guid>
     {
-        [Key]
-        public Guid PostID { get; set; }
+        //[Key]
+        //public Guid ID { get; set; }
 
         [Required]
         public string OwnerID { get; set; } = string.Empty;
