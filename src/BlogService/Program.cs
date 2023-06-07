@@ -2,7 +2,9 @@ using AuthenticationService;
 using Infrastructure.Data;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Application.Services;
+using Application.Services.PostService;
+using Application.Services.TagService;
+using Application.Services.CommentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,7 @@ builder.Services
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,9 +41,12 @@ builder.Services.AddInfrastructure(option =>
 
 // Add Service
 builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<TagServices>();
+builder.Services.AddScoped<CommentService>();
 
 // Add CORS
 builder.Services.AddCors();
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 builder.Services.AddMyOpendIddictConfiguration();
 
@@ -53,6 +59,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     Console.WriteLine(DB_CONNECTION_STRING);
+    app.UseCors(op =>
+    {
+        op.AllowAnyOrigin();
+        op.AllowAnyMethod();
+        op.AllowAnyHeader();
+    });
 }
 
 app.UseHttpsRedirection();

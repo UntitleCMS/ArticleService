@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Infrastructure.Persistence.Migrations
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -15,88 +15,88 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Posts",
                 columns: table => new
                 {
-                    PostID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OwnerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Contest = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPublished = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false, computedColumnSql: "GETDATE()")
+                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Posts", x => x.PostID);
+                    table.PrimaryKey("PK_Posts", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
-                    TagId = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TagName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     TagColour = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tags", x => x.TagId);
+                    table.PrimaryKey("PK_Tags", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
-                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false, computedColumnSql: "GETDATE()")
+                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.CommentId);
+                    table.PrimaryKey("PK_Comments", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Comments_Posts_PostId",
-                        column: x => x.PostId,
+                        name: "FK_Comments_Posts_PostID",
+                        column: x => x.PostID,
                         principalTable: "Posts",
-                        principalColumn: "PostID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
                 name: "PostTag",
                 columns: table => new
                 {
-                    PostsPostID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TagsTagId = table.Column<int>(type: "int", nullable: false)
+                    PostsID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TagsID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PostTag", x => new { x.PostsPostID, x.TagsTagId });
+                    table.PrimaryKey("PK_PostTag", x => new { x.PostsID, x.TagsID });
                     table.ForeignKey(
-                        name: "FK_PostTag_Posts_PostsPostID",
-                        column: x => x.PostsPostID,
+                        name: "FK_PostTag_Posts_PostsID",
+                        column: x => x.PostsID,
                         principalTable: "Posts",
-                        principalColumn: "PostID",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PostTag_Tags_TagsTagId",
-                        column: x => x.TagsTagId,
+                        name: "FK_PostTag_Tags_TagsID",
+                        column: x => x.TagsID,
                         principalTable: "Tags",
-                        principalColumn: "TagId",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_PostId",
+                name: "IX_Comments_PostID",
                 table: "Comments",
-                column: "PostId");
+                column: "PostID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostTag_TagsTagId",
+                name: "IX_PostTag_TagsID",
                 table: "PostTag",
-                column: "TagsTagId");
+                column: "TagsID");
         }
 
         /// <inheritdoc />

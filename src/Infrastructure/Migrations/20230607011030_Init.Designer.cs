@@ -4,16 +4,19 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infrastructure.Persistence.Migrations
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230607011030_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,7 +27,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entity.Comment", b =>
                 {
-                    b.Property<Guid>("CommentId")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -40,21 +43,25 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("LastUpdated")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
-                        .HasComputedColumnSql("GETDATE()");
+                        .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<Guid>("PostId")
+                    b.Property<string>("OwnerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PostID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("CommentId");
+                    b.HasKey("ID");
 
-                    b.HasIndex("PostId");
+                    b.HasIndex("PostID");
 
                     b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Domain.Entity.Post", b =>
                 {
-                    b.Property<Guid>("PostID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -73,7 +80,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("LastUpdated")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
-                        .HasComputedColumnSql("GETDATE()");
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("OwnerID")
                         .IsRequired()
@@ -86,18 +93,18 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<string>("Thumbnail")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PostID");
+                    b.HasKey("ID");
 
                     b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Domain.Entity.Tag", b =>
                 {
-                    b.Property<int>("TagId")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TagId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("TagColour")
                         .IsRequired()
@@ -109,22 +116,22 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("TagId");
+                    b.HasKey("ID");
 
                     b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("PostTag", b =>
                 {
-                    b.Property<Guid>("PostsPostID")
+                    b.Property<Guid>("PostsID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TagsTagId")
+                    b.Property<int>("TagsID")
                         .HasColumnType("int");
 
-                    b.HasKey("PostsPostID", "TagsTagId");
+                    b.HasKey("PostsID", "TagsID");
 
-                    b.HasIndex("TagsTagId");
+                    b.HasIndex("TagsID");
 
                     b.ToTable("PostTag");
                 });
@@ -133,22 +140,20 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Domain.Entity.Post", null)
                         .WithMany("Comments")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PostID");
                 });
 
             modelBuilder.Entity("PostTag", b =>
                 {
                     b.HasOne("Domain.Entity.Post", null)
                         .WithMany()
-                        .HasForeignKey("PostsPostID")
+                        .HasForeignKey("PostsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entity.Tag", null)
                         .WithMany()
-                        .HasForeignKey("TagsTagId")
+                        .HasForeignKey("TagsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
