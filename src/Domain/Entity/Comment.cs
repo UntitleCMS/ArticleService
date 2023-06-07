@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using Domain.Common;
 
 namespace Domain.Entity
@@ -12,9 +13,12 @@ namespace Domain.Entity
         [Required]
         public string Content { get; set; } = string.Empty;
 
-        [ForeignKey("Posts")]
-        public Guid PostId { get; set; }
+        [Required]
+        public string OwnerID { get; set; } = string.Empty;
 
-        Post? Post { get; set; }
+        //[ForeignKey("Posts")]
+        //public Guid PostId { get; set; }
+
+        //Post? Post { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Application.Services.PostService;
 using Application.Services.TagService;
+using Application.Services.CommentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,7 @@ builder.Services.AddInfrastructure(option =>
 // Add Service
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<TagServices>();
+builder.Services.AddScoped<CommentService>();
 
 // Add CORS
 builder.Services.AddCors();
@@ -57,6 +59,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     Console.WriteLine(DB_CONNECTION_STRING);
+    app.UseCors(op =>
+    {
+        op.AllowAnyOrigin();
+        op.AllowAnyMethod();
+        op.AllowAnyHeader();
+    });
 }
 
 app.UseHttpsRedirection();
