@@ -16,7 +16,11 @@ public static class OpenIddictConfiguration
 
         .AddValidation(options =>
         {
-            options.SetIssuer("https://172.28.64.1:4434");
+            var issure = Environment.GetEnvironmentVariable("AUTH_SERVER")
+                ?? throw new Exception("ENV AUTH_SERVER is null");
+            options.SetIssuer(issure);
+            //options.SetIssuer("https://172.28.64.1:4434");
+            //options.SetIssuer("http://authenticationservice/");
             options.UseSystemNetHttp();
 
             // Register the ASP.NET Core host.

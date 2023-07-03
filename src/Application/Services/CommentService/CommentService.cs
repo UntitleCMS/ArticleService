@@ -14,18 +14,22 @@ namespace Application.Services.CommentService
     {
         private readonly IAppDbContext _appDbContext;
 
-        public CommentService(IAppDbContext appDbContext)
+        public CommentService(
+            IAppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
         }
 
 
-        public ICollection<Comment> AddToPost(Guid postID, CommentRequestAdd comment)
+        public ICollection<Comment> AddToPost(string ownerID, Guid postID, CommentRequestAdd comment)
         { 
             var p = _appDbContext.Posts
                 .Include(p=>p.Comments)
                 .Single(p=>p.ID == postID) ;
-            p?.Comments!.Add(new() { Content=comment.Content });
+            p?.Comments!.Add(new() {
+                Content=comment.Content ,
+                OwnerID = ownerID
+            });
             _appDbContext.SaveChanges();
             return p.Comments!;
         }
