@@ -7,15 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using OpenIddict.Abstractions;
-using OpenIddict.Validation.AspNetCore;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace BlogService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("posts")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public class PostController : ControllerBase
     {
         private readonly PostService postService;
@@ -27,7 +23,6 @@ namespace BlogService.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("~/api/posts")]
         public IActionResult AllPosts(int? page, int? size)
         {
             if (page is not null && size is not null)
@@ -60,9 +55,11 @@ namespace BlogService.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddPost(PostRequestAddDto newPost)
+        public IActionResult AddPost(
+            [FromBody]  PostRequestAddDto newPost,
+            [FromQuery] string? ownerID)
         {
-            var ownerID = User.GetClaim(Claims.Subject);
+            //string? ownerID = null;
             if (ownerID is null)
                 return BadRequest("Invalid Token");
 

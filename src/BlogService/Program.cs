@@ -1,4 +1,3 @@
-using AuthenticationService;
 using Infrastructure.Data;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +47,6 @@ builder.Services.AddScoped<CommentService>();
 builder.Services.AddCors();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
-builder.Services.AddMyOpendIddictConfiguration();
 
 // BUILD APP
 var app = builder.Build();
