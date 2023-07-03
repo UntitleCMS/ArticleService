@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("tags")]
     [ApiController]
     public class TagController : ControllerBase
     {
@@ -18,7 +18,6 @@ namespace BlogService.Controllers
         }
 
         [HttpGet]
-        [Route("~/api/tags")]
         public IActionResult Gets()
         {
             return Ok(_tagServices.Tags.AsNoTracking());
