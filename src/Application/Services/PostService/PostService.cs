@@ -25,7 +25,8 @@ namespace Application.Services.PostService
             return _context.Posts
                 .Include(p=>p.Tags)
                 .Include(p=>p.Comments)
-                .FirstOrDefault(p => p.ID == id);
+                .Where(p=>p.ID == id)
+                .FirstOrDefault(p => p.IsPublished);
         }
 
         public IQueryable<Post> AllPost()
@@ -35,7 +36,7 @@ namespace Application.Services.PostService
                 .Include(p => p.Tags);
         }
 
-        public Post Add(PostRequestAddDto post)
+        public Post Add(string ownerID, PostRequestAddDto post)
         {
 
             var newPost = new Post()
@@ -46,7 +47,8 @@ namespace Application.Services.PostService
                 IsPublished = post.IsPublished,
                 Tags = _context.Tags
                     .Where(t=>post.Tags.Contains(t.ID))
-                    .ToList()
+                    .ToList(),
+                OwnerID = ownerID
             };
             _context.Posts.Add(newPost);
             _context.SaveChanges();
@@ -74,6 +76,27 @@ namespace Application.Services.PostService
             var p = _context.Posts.First(p => p.ID == id);
             _context.Posts.Remove(p);
             _context.SaveChanges();
+        }
+
+        public PostPagableResponDto GetPage(int page, int size)
+        {
+            var posts = _context.Posts
+                 .Where(p=>p.IsPublished == true)
+                 .OrderBy(p => p.CreatedAt)
+                 .Include(p=>p.Tags)
+                 .Skip((page - 1) * size)
+                 .Take(size + 1)
+                 .AsNoTracking();
+
+           return new PostPagableResponDto()
+               {
+                   CurentPage = page,
+                   PageSize = size,
+                   PageCount = _context.Posts.Count()/size,
+                   Data = posts.Take(size).ToList(),
+                   HasNext = posts.Count() == size + 1,
+                   Next = posts.Last()
+               } ;
         }
 
     }
