@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Application.Services.PostService;
 using Application.Services.TagService;
 using Application.Services.CommentService;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using System.Reflection;
+using Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,10 @@ builder.Services.AddScoped<CommentService>();
 // Add CORS
 builder.Services.AddCors();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
+// Add Application Layer Config
+builder.Services.AddApplicationServices();
+
 
 
 // BUILD APP
