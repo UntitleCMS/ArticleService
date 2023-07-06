@@ -28,7 +28,13 @@ namespace Infrastructure
                 );
             });
 
-            service.AddScoped<IAppDbContext>(sp=>sp.GetRequiredService<AppDbContext>());
+            service.AddScoped<IAppDbContext>( 
+                sp => sp.GetRequiredService<AppDbContext>() );
+
+            service.BuildServiceProvider()
+                .GetRequiredService<AppDbContext>()
+                .Database
+                .EnsureCreated();
 
         }
     }

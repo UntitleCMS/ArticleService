@@ -3,6 +3,7 @@ using Domain.Common;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Linq.Expressions;
 using System.Xml;
@@ -70,6 +71,7 @@ namespace Infrastructure.Data
         {
             return ((MemberExpression)memberAccess.Body).Member.Name;
         }
+
 
     }
 
