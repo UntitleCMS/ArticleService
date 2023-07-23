@@ -3,6 +3,7 @@ version: '3.4'
 services:
   blogservice:
     image: ${DOCKER_REGISTRY-}blogservice
+    restart: always
     build:
       context: ./src
       dockerfile: BlogService/Dockerfile
@@ -10,15 +11,31 @@ services:
       DB_CONNECTION_STRING: Server=blog-database;Database=BlogService;User=sa;Password=P@ssword;TrustServerCertificate=True;
       AUTH_SERVER: https://172.28.64.1:4434
 
-  blog-database:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=P@ssword
-    ports:
-      - "1434:1433"
-    volumes:
-      - "blog-service:/var/opt/mssql"
+  #blog-database:
+  #  image: mcr.microsoft.com/mssql/server:2019-latest
+  #  environment:
+  #    - ACCEPT_EULA=Y
+  #    - MSSQL_SA_PASSWORD=P@ssword
+  #  ports:
+  #    - "1434:1433"
+  #  volumes:
+  #    - "blog-service:/var/opt/mssql"
 
-volumes:
-  blog-service:
+  mongo1:
+    image: mongo
+    volumes:
+      - ./mongo_database/data/m1:/data/db
+      - ./mongo_database/config/m1:/data/configdb
+      - ./mongo_database/log/m1:/data/db/log
+      - ./mongo_database/scripts/:/scripts
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      IS_PRIMARY: true
+    ports:
+      - 50001:50001
+    command: bash /scripts/endpoint.sh
+
+
+#volumes:
+#  blog-service:
+#  mongo-volum:

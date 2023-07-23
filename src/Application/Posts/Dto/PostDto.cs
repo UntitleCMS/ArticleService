@@ -13,13 +13,13 @@ public class PostDto
     public string? Cover { get; private set; }
     public DateTime LastUpdate { get; private set; }
     public DateTime CreateAt { get; private set; }
-    public ICollection<Tag>? Tags { get; private set; }
+    public ICollection<string>? Tags { get; private set; }
     public ICollection<Comment>? Comments { get; private set; }
 
     public PostDto(Post p)
     {
         Id = p.ID.ToBase64Url();
-        OwnerId = p.OwnerID;
+        OwnerId = p.OwnerID.ToBase64Url();
         Title = p.PostTitle;
         Content = p.Contest;
         IsPublish = p.IsPublished;

@@ -1,8 +1,10 @@
 ﻿using Application.Common.Extentions;
 using Application.Common.Interfaces;
+using Application.Common.Interfaces.Repositoris;
 using Application.Posts.Dto;
+using Domain.Entity;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,9 +24,16 @@ public class GetAllPostsQuery : IRequest<IQueryable<PostDto>>
     public GetAllPostsQuery(string get, string id, int? take = null)
     {
         Take = take ?? Take;
-        ID = id.ToGuid();
         Direction = get;
         IsPage = true;
+        try
+        {
+            ID = new Guid(id);
+        }
+        catch (FormatException)
+        {
+            ID = id.ToGuid();
+        }
     }
 
     public GetAllPostsQuery() => IsPage = false;
@@ -33,38 +42,78 @@ public class GetAllPostsQuery : IRequest<IQueryable<PostDto>>
 
 public class GetAllPostsQueryHandeler : IRequestHandler<GetAllPostsQuery, IQueryable<PostDto>>
 {
-    private readonly IAppDbContext _appDbContext;
+    private readonly IAppMongoDbContext _appDbContext;
+    public readonly IRepository<Post, Guid> _postReposirory;
 
-    public GetAllPostsQueryHandeler(IAppDbContext appDbContext)
+    public GetAllPostsQueryHandeler(
+        IAppMongoDbContext appDbContext ,
+        IRepository<Post, Guid> postReposirory)
     {
         _appDbContext = appDbContext;
+        _postReposirory = postReposirory;
     }
 
-    public Task<IQueryable<PostDto>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+    public async Task<IQueryable<PostDto>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
-        var postQurey = _appDbContext.Posts
-            .Where(p => p.IsPublished == true);
+        //_logger.LogInformation("Handle Request : {}", JsonConvert.SerializeObject(request,Formatting.Indented));
+
+        GetPublicedPosts(out var publichedPosts);
 
         if (request.IsPage)
-        {
-            if (request.Direction == "BEFORE")
-                postQurey = postQurey
-                    .Where(p => p.CreatedAt < _appDbContext.Posts.FirstOrDefault(r => r.ID == request.ID).CreatedAt)
-                    .OrderByDescending(p=>p.CreatedAt);
-            else
-                postQurey = postQurey
-                    .Where(p => p.CreatedAt > _appDbContext.Posts.FirstOrDefault(r => r.ID == request.ID).CreatedAt)
-                    .OrderBy(p=>p.CreatedAt);
-        }
+            SortPost(request.Direction, request.ID, ref publichedPosts);
         else
-            postQurey = postQurey.OrderBy(p => p.CreatedAt);
+            publichedPosts = publichedPosts.OrderBy(p => p.CreatedAt);
 
-
-        var a = postQurey
-            .Include(p => p.Tags)
+        var a = publichedPosts
             .Take(request.Take)
+            .ToList()
             .Select(p => new PostDto(p));
 
-        return Task.FromResult(a);
+        //_logger.LogInformation("return data : {}", JsonConvert.SerializeObject(a.Select(p=>new {p.Id,p.OwnerId,p.Title}),Formatting.Indented));
+        return a.AsQueryable();
+
     }
+
+
+    private void GetPublicedPosts(out IQueryable<Post> publichedPosts )
+    {
+        publichedPosts = _postReposirory
+            .Where(p => p.IsPublished == true);
+    }
+
+    private bool GetRefDate(Guid fromPostId, out DateTime? refDate)
+    {
+        refDate = _postReposirory
+                .Where(p => p.ID == fromPostId)
+                .Select(p => p.CreatedAt)
+                .FirstOrDefault();
+
+        if (refDate == DateTime.MinValue)
+        {
+            //_logger.LogInformation("post ID {} is not found.", fromPostId);
+            refDate = null;
+            return false;
+        }
+        return true;
+
+    }
+
+    private void SortPost(string direction, Guid refId, ref IQueryable<Post> posts)
+    {
+        if (!GetRefDate(refId, out var refDate))
+        {
+            posts = (IQueryable<Post>) Array.Empty<PostDto>().AsQueryable();
+            return;
+        }
+
+        if (direction == "BEFORE")
+            posts = posts 
+                .Where(p => p.CreatedAt < refDate)
+                .OrderByDescending(p=>p.CreatedAt);
+        else
+            posts = posts 
+                .Where(p => p.CreatedAt > refDate)
+                .OrderBy(p=>p.CreatedAt);
+    }
+
 }

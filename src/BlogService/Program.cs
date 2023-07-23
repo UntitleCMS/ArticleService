@@ -1,4 +1,3 @@
-using Infrastructure.Data;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

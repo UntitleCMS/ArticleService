@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Domain.Entity;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +18,9 @@ public class DeletePostCommand : IRequest<string>
 
 public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand, string>
 {
-    private readonly IAppDbContext _appDbContext;
+    private readonly IAppMongoDbContext _appDbContext;
 
-    public DeletePostCommandHandler(IAppDbContext appDbContext)
+    public DeletePostCommandHandler(IAppMongoDbContext appDbContext)
     {
         _appDbContext = appDbContext;
     }
@@ -30,8 +29,7 @@ public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand, strin
     {
         var a = _appDbContext.Posts
             .Where(p => p.ID == request.PostId)
-            .Where(p => p.OwnerID == request.UserId)
-            .ExecuteDelete();
+            .Where(p => p.OwnerID == new Guid(request.UserId));
 
 
         return Task.FromResult(a.ToString());
