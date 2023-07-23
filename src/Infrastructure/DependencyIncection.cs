@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Application.Common.Interfaces.Repositoris;
 using Domain.Entity;
 using Infrastructure.Persistence;
 using Infrastructure.Repositoris;

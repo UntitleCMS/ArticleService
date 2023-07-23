@@ -1,5 +1,7 @@
 ﻿using Domain.Entity;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,10 @@ public class DataContextContext
 
     public DataContextContext()
     {
-        mongoClient = new MongoClient("mongodb://mongo1:50001/?replicaSet=my-mongo-set");
+        var settings = MongoClientSettings.FromConnectionString("mongodb://mongo1:50001/?replicaSet=my-mongo-set");
+        settings.LoggingSettings = new LoggingSettings();
+
+        mongoClient = new MongoClient(settings);
         database = mongoClient.GetDatabase("post_service");
     }
 

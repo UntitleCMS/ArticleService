@@ -2,12 +2,15 @@
 using Application.Posts.Dto;
 using Domain.Entity;
 using Infrastructure.Persistence;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Driver;
+using System.Collections;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositoris;
 
-public class PostsRepository : PostsRepositoryBase<Post,Guid>
+public class PostsRepository : IRepository<Post,Guid>
 {
     private readonly DataContextContext _mongo;
     private readonly IMongoCollection<Post> _postsCol;
@@ -22,9 +25,11 @@ public class PostsRepository : PostsRepositoryBase<Post,Guid>
         _postsQ = _postsCol.AsQueryable();
     }
 
-    public override Expression Expression => _postsQ.Expression;
+    public Expression Expression => _postsQ.Expression;
 
-    public override IQueryProvider Provider => _postsQ.Provider;
+    public IQueryProvider Provider => _postsQ.Provider;
+
+    public Type ElementType => typeof(Post);
 
     private IClientSessionHandle Session
     {
@@ -37,17 +42,17 @@ public class PostsRepository : PostsRepositoryBase<Post,Guid>
         }
     }
 
-    public override void Add(Post entity)
+    public void Add(Post entity)
     {
         _postsCol.InsertOne(Session, entity);
     }
 
-    public override void AddRange(IEnumerable<Post> entities)
+    public void AddRange(IEnumerable<Post> entities)
     {
         _postsCol.InsertMany(entities);
     }
 
-    public override void Dispose()
+    public void Dispose()
     {
         Console.WriteLine("Post Repository is Dispose.");
         if (_session is not null && _session.IsInTransaction)
@@ -59,58 +64,67 @@ public class PostsRepository : PostsRepositoryBase<Post,Guid>
         _session = null;
     }
 
-    public override Post Find(Guid id)
+    public Post Find(Guid id)
     {
-        return _postsQ.Single(p=>p.ID == id);
+        return _postsCol.Find( p=>p.ID == id )
+            .FirstOrDefault();
     }
 
-    public override  ValueTask<Post> FindAsync(Guid id)
+    public ValueTask<Post> FindAsync(Guid id)
     {
         return new ValueTask<Post>( _postsCol.FindAsync(p => p.ID == id).Result.Single());
     }
 
-    public override IEnumerator<Post> GetEnumerator()
+    public IEnumerator<Post> GetEnumerator()
     {
         return _postsQ.GetEnumerator();
     }
 
-    public override void Remove(Post entity)
+    public void Remove(Post entity)
     {
-        _postsCol.FindOneAndDelete(p => p.ID == entity.ID);
+        _postsCol.FindOneAndDelete(p => p == entity);
     }
 
-    public override void RemoveById(Guid entityId)
+    public void RemoveById(Guid entityId)
     {
         _postsCol.FindOneAndDelete(p => p.ID == entityId);
     }
 
-    public override void RemoveRange(IEnumerable<Post> entities)
+    public void RemoveRange(IEnumerable<Post> entities)
     {
-        throw new NotImplementedException();
+        _postsCol.DeleteMany(p => entities.Contains(p));
     }
 
-    public override void RemoveRange(Expression<Func<Post, bool>> predicate)
+    public void RemoveRange(Expression<Func<Post, bool>> predicate)
     {
-        throw new NotImplementedException();
+        _postsCol.DeleteMany(predicate);
     }
 
-    public override void SaveChanges()
+    public void SaveChanges()
     {
         Session.CommitTransaction();
+        _session = null;
     }
 
-    public override Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return Session.CommitTransactionAsync(cancellationToken);
     }
 
-    public override void Update(Post entity)
+    public void Update(Post entity)
+    {
+        var fillter = Builders<Post>.Filter.Empty;
+        var update = Builders<Post>.Update.Set(p=>p,entity);
+        _postsCol.UpdateOne(Session, fillter,update);
+    }
+
+    public void UpdateRange(IEnumerable<Post> entities)
     {
         throw new NotImplementedException();
     }
 
-    public override void UpdateRange(IEnumerable<Post> entities)
+    IEnumerator IEnumerable.GetEnumerator()
     {
-        throw new NotImplementedException();
+        return GetEnumerator();
     }
 }

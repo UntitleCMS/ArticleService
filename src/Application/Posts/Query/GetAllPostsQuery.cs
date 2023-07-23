@@ -1,5 +1,6 @@
 ﻿using Application.Common.Extentions;
 using Application.Common.Interfaces;
+using Application.Common.Interfaces.Repositoris;
 using Application.Posts.Dto;
 using Domain.Entity;
 using MediatR;
@@ -42,12 +43,14 @@ public class GetAllPostsQuery : IRequest<IQueryable<PostDto>>
 public class GetAllPostsQueryHandeler : IRequestHandler<GetAllPostsQuery, IQueryable<PostDto>>
 {
     private readonly IAppMongoDbContext _appDbContext;
+    public readonly IRepository<Post, Guid> _postReposirory;
 
     public GetAllPostsQueryHandeler(
-        IAppMongoDbContext appDbContext
-        )
+        IAppMongoDbContext appDbContext ,
+        IRepository<Post, Guid> postReposirory)
     {
         _appDbContext = appDbContext;
+        _postReposirory = postReposirory;
     }
 
     public async Task<IQueryable<PostDto>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
@@ -74,13 +77,13 @@ public class GetAllPostsQueryHandeler : IRequestHandler<GetAllPostsQuery, IQuery
 
     private void GetPublicedPosts(out IQueryable<Post> publichedPosts )
     {
-        publichedPosts = _appDbContext.Posts
+        publichedPosts = _postReposirory
             .Where(p => p.IsPublished == true);
     }
 
     private bool GetRefDate(Guid fromPostId, out DateTime? refDate)
     {
-        refDate = _appDbContext.Posts
+        refDate = _postReposirory
                 .Where(p => p.ID == fromPostId)
                 .Select(p => p.CreatedAt)
                 .FirstOrDefault();

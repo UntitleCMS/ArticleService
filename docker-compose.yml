@@ -11,26 +11,15 @@ services:
       DB_CONNECTION_STRING: Server=blog-database;Database=BlogService;User=sa;Password=P@ssword;TrustServerCertificate=True;
       AUTH_SERVER: https://172.28.64.1:4434
 
-  blog-database:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=P@ssword
-    ports:
-      - "1434:1433"
-    volumes:
-      - "blog-service:/var/opt/mssql"
-
-  mongodb:
-    image: mongo
-    #restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=user
-      - MONGO_INITDB_ROOT_PASSWORD=pass
-    ports:
-      - 27017:27017
-    volumes:
-      - mongo-volum:/data/db
+  #blog-database:
+  #  image: mcr.microsoft.com/mssql/server:2019-latest
+  #  environment:
+  #    - ACCEPT_EULA=Y
+  #    - MSSQL_SA_PASSWORD=P@ssword
+  #  ports:
+  #    - "1434:1433"
+  #  volumes:
+  #    - "blog-service:/var/opt/mssql"
 
   mongo1:
     image: mongo
@@ -47,6 +36,6 @@ services:
     command: bash /scripts/endpoint.sh
 
 
-volumes:
-  blog-service:
-  mongo-volum:
+#volumes:
+#  blog-service:
+#  mongo-volum:

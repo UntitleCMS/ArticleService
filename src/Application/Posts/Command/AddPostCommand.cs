@@ -1,7 +1,10 @@
 ﻿using Application.Common.Extentions;
 using Application.Common.Interfaces;
+using Application.Common.Interfaces.Repositoris;
 using Domain.Entity;
 using MediatR;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using System.Text.Json.Serialization;
 
 namespace Application.Posts.Command;
@@ -21,15 +24,19 @@ public class AddPostCommand : IRequest<string>
 public class AddPostCommandHandler : IRequestHandler<AddPostCommand, string>
 {
     private readonly IAppMongoDbContext _appDbContext;
+    private readonly IRepository<Post,Guid> _postRepository;
 
-    public AddPostCommandHandler(IAppMongoDbContext appDbContext)
+    public AddPostCommandHandler(
+        IAppMongoDbContext appDbContext,
+        IRepository<Post, Guid> postRepository)
     {
         _appDbContext = appDbContext;
+        _postRepository = postRepository;
     }
 
     public async Task<string> Handle(AddPostCommand request, CancellationToken cancellationToken)
     {
-        _appDbContext.Posts.Add(new()
+        var post = new Post
         {
             PostTitle = request.Title,
             Thumbnail = request.Cover,
@@ -42,33 +49,11 @@ public class AddPostCommandHandler : IRequestHandler<AddPostCommand, string>
             {
                 "html","css"
             }
-        });
-        await _appDbContext.SaveChangesAsync();
-        return "";
-        //try
-        //{
-        //    var newPost = new Post()
-        //    {
-        //        PostTitle = request.Title,
-        //        Thumbnail = request.Cover,
-        //        Contest = request.Content,
-        //        IsPublished = request.IsPublish,
-        //        OwnerID = new Guid(request.Sub)
-        //    };
-        //    _appDbContext.Attach(newPost);
+        };
 
-        //    var tagsToAdd = await _appDbContext.Tags
-        //        .Where(t => request.TagsId.Contains(t.ID))
-        //        .ToListAsync(cancellationToken);
-        //    newPost.Tags = tagsToAdd;
+        _postRepository.Add(post);
+        await _postRepository.SaveChangesAsync();
 
-
-        //    _appDbContext.SaveChanges();
-        //    return newPost.ID.ToBase64Url();
-        //}
-        //catch (Exception e)
-        //{
-        //    return e.Message;
-        //}
+        return post.ID.ToBase64Url();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Extentions;
 using Application.Common.Interfaces;
+using Application.Common.Interfaces.Repositoris;
 using Domain.Entity;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;

@@ -20,7 +20,7 @@ public class AppMongoDbContext : MongoDbContext, IAppMongoDbContext
 {
     private readonly ILogger<AppMongoDbContext> _logger;    
     private static readonly IMongoDbConnection _connectionString 
-        = MongoDbConnection.FromConnectionString("mongodb://user:pass@mongodb/admin");
+        = MongoDbConnection.FromConnectionString("mongodb://mongo1:50001/?replicaSet=my-mongo-set");
 
     public MyMongoDbSet<Post> _Posts { get; set; }
     public MyMongoDbSet<Tag> _Tags { get; set; }

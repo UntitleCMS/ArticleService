@@ -6,9 +6,9 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Common.Interfaces;
+namespace Application.Common.Interfaces.Repositoris;
 
-public interface IRepository<TEntity,TID> : ISaveable, IQueryable<TEntity>, IDisposable
+public interface IRepository<TEntity, TID> : ISaveable, IQueryable<TEntity>, IDisposable
     where TEntity : class
 {
     TEntity Find(TID id);
