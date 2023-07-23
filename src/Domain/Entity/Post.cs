@@ -7,11 +7,8 @@ namespace Domain.Entity
 {
     public class Post : TimestampEntity<Guid>
     {
-        //[Key]
-        //public Guid ID { get; set; }
-
         [Required]
-        public string OwnerID { get; set; } = string.Empty;
+        public Guid OwnerID { get; set; }
 
         [Required]
         public string PostTitle { get; set; } = string.Empty;
@@ -24,7 +21,7 @@ namespace Domain.Entity
 
         public bool IsPublished { get; set; } = false;
 
-        public ICollection<Tag>? Tags { get; set; }
+        public ICollection<string>? Tags { get; set; }
 
         public ICollection<Comment>? Comments { get; set; }
     }

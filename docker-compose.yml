@@ -3,6 +3,7 @@ version: '3.4'
 services:
   blogservice:
     image: ${DOCKER_REGISTRY-}blogservice
+    restart: always
     build:
       context: ./src
       dockerfile: BlogService/Dockerfile
@@ -20,5 +21,32 @@ services:
     volumes:
       - "blog-service:/var/opt/mssql"
 
+  mongodb:
+    image: mongo
+    #restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-volum:/data/db
+
+  mongo1:
+    image: mongo
+    volumes:
+      - ./mongo_database/data/m1:/data/db
+      - ./mongo_database/config/m1:/data/configdb
+      - ./mongo_database/log/m1:/data/db/log
+      - ./mongo_database/scripts/:/scripts
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      IS_PRIMARY: true
+    ports:
+      - 50001:50001
+    command: bash /scripts/endpoint.sh
+
+
 volumes:
   blog-service:
+  mongo-volum:

@@ -2,8 +2,6 @@
 using Application.Common.Interfaces;
 using Domain.Entity;
 using MediatR;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 namespace Application.Posts.Command;
@@ -22,43 +20,55 @@ public class AddPostCommand : IRequest<string>
 
 public class AddPostCommandHandler : IRequestHandler<AddPostCommand, string>
 {
-    private readonly IAppDbContext _appDbContext;
+    private readonly IAppMongoDbContext _appDbContext;
 
-    public AddPostCommandHandler(IAppDbContext appDbContext)
+    public AddPostCommandHandler(IAppMongoDbContext appDbContext)
     {
         _appDbContext = appDbContext;
     }
 
     public async Task<string> Handle(AddPostCommand request, CancellationToken cancellationToken)
     {
-        using var transaction = _appDbContext.Database.BeginTransaction();
-
-        try
+        _appDbContext.Posts.Add(new()
         {
-            var newPost = new Post()
+            PostTitle = request.Title,
+            Thumbnail = request.Cover,
+            Contest = request.Content,
+            IsPublished = request.IsPublish,
+            OwnerID = new Guid(request.Sub),
+            CreatedAt = DateTime.Now,
+            LastUpdated = DateTime.Now,
+            Tags = new List<string>()
             {
-                PostTitle = request.Title,
-                Thumbnail = request.Cover,
-                Contest = request.Content,
-                IsPublished = request.IsPublish,
-                OwnerID = request.Sub
-            };
-            _appDbContext.Attach(newPost);
+                "html","css"
+            }
+        });
+        await _appDbContext.SaveChangesAsync();
+        return "";
+        //try
+        //{
+        //    var newPost = new Post()
+        //    {
+        //        PostTitle = request.Title,
+        //        Thumbnail = request.Cover,
+        //        Contest = request.Content,
+        //        IsPublished = request.IsPublish,
+        //        OwnerID = new Guid(request.Sub)
+        //    };
+        //    _appDbContext.Attach(newPost);
 
-            var tagsToAdd = await _appDbContext.Tags
-                .Where(t => request.TagsId.Contains(t.ID))
-                .ToListAsync(cancellationToken);
-            newPost.Tags = tagsToAdd;
+        //    var tagsToAdd = await _appDbContext.Tags
+        //        .Where(t => request.TagsId.Contains(t.ID))
+        //        .ToListAsync(cancellationToken);
+        //    newPost.Tags = tagsToAdd;
 
 
-            _appDbContext.SaveChanges();
-            transaction.Commit();
-            return newPost.ID.ToBase64Url();
-        }
-        catch (Exception e)
-        {
-            transaction.Rollback();
-            return e.Message;
-        }
+        //    _appDbContext.SaveChanges();
+        //    return newPost.ID.ToBase64Url();
+        //}
+        //catch (Exception e)
+        //{
+        //    return e.Message;
+        //}
     }
 }
