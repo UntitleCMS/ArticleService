@@ -12,6 +12,7 @@ namespace Application.Posts.Command;
 public class AddPostCommand : IRequest<string>
 {
     public string Title { get; set; } = string.Empty;
+    public string SubTitle { get; set; } = string.Empty;
     public string Cover { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public int[] TagsId { get; set; } = Array.Empty<int>();
@@ -39,6 +40,7 @@ public class AddPostCommandHandler : IRequestHandler<AddPostCommand, string>
         var post = new Post
         {
             PostTitle = request.Title,
+            PostSubTitle = request.SubTitle,
             Thumbnail = request.Cover,
             Contest = request.Content,
             IsPublished = request.IsPublish,

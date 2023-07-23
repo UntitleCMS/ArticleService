@@ -12,6 +12,8 @@ namespace Domain.Entity
 
         [Required]
         public string PostTitle { get; set; } = string.Empty;
+        [Required]
+        public string PostSubTitle { get; set; } = string.Empty;
 
         [AllowNull]
         public string? Thumbnail { get; set; }
