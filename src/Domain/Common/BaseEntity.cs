@@ -1,20 +1,10 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace Domain.Common
+namespace Domain.Common;
+
+public abstract class BaseEntity<TypeId>
+    where TypeId : IEquatable<TypeId>
 {
-    public abstract class BaseEntity<TypeId> where TypeId : IEquatable<TypeId>
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [BsonId]
-        public virtual TypeId ID { get; set; }
-    }
+    [BsonId]
+    public virtual TypeId? ID { get; set; }
 }

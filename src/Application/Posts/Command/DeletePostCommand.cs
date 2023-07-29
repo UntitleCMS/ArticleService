@@ -18,21 +18,12 @@ public class DeletePostCommand : IRequest<string>
 
 public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand, string>
 {
-    private readonly IAppMongoDbContext _appDbContext;
-
-    public DeletePostCommandHandler(IAppMongoDbContext appDbContext)
+    public DeletePostCommandHandler()
     {
-        _appDbContext = appDbContext;
     }
 
     public Task<string> Handle(DeletePostCommand request, CancellationToken cancellationToken)
     {
-        var a = _appDbContext.Posts
-            .Where(p => p.ID == request.PostId)
-            .Where(p => p.OwnerID == new Guid(request.UserId));
-
-
-        return Task.FromResult(a.ToString());
-
+        return Task.FromResult("");
     }
 }

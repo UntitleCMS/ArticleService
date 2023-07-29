@@ -1,9 +1,6 @@
 ﻿using Application.Common.Interfaces.Repositoris;
-using Application.Posts.Dto;
 using Domain.Entity;
 using Infrastructure.Persistence;
-using MongoDB.Bson;
-using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using System.Collections;
 using System.Linq.Expressions;
@@ -18,9 +15,9 @@ public class PostsRepository : IRepository<Post,Guid>
 
     private IClientSessionHandle? _session;
 
-    public PostsRepository()
+    public PostsRepository(DataContextContext mongo)
     {
-        _mongo = new();
+        _mongo = mongo;
         _postsCol = _mongo.Collection<Post>();
         _postsQ = _postsCol.AsQueryable();
     }
@@ -66,8 +63,9 @@ public class PostsRepository : IRepository<Post,Guid>
 
     public Post Find(Guid id)
     {
-        return _postsCol.Find( p=>p.ID == id )
+        var p =  _postsCol.Find( p=>p.ID==id )
             .FirstOrDefault();
+        return p;
     }
 
     public ValueTask<Post> FindAsync(Guid id)

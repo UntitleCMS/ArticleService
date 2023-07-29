@@ -1,11 +1,13 @@
 ﻿using Application.Common.Extentions;
 using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositoris;
+using Application.Common.Mediator;
 using Application.Posts.Dto;
 using Domain.Entity;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -14,28 +16,35 @@ using System.Xml.Linq;
 
 namespace Application.Posts.Query;
 
-public record GetPostQuery(string Id) : IRequest<PostDto>;
-
-public class GetPostQueryHandeler : IRequestHandler<GetPostQuery, PostDto>
+public class GetPostQuery : IRequestWrap<PostDto>
 {
-    private readonly IAppMongoDbContext _appDbContext;
+    [RegularExpression(@"^[A-Za-z0-9_-]{22}$", ErrorMessage = "Invalid characters used.")]
+    public virtual string Id { get; set; } = string.Empty;
+    public GetPostQuery() { }
+    public GetPostQuery(string Id)
+    {
+        this.Id = Id;
+    }
+}
+
+public class GetPostQueryHandeler : IRequestHandlerWithResult<GetPostQuery, PostDto>
+{
     private readonly IRepository<Post, Guid> _postRepository;
 
     public GetPostQueryHandeler(
-        IAppMongoDbContext appDbContext,
         IRepository<Post, Guid> postRepository)
     {
-        _appDbContext = appDbContext;
         _postRepository = postRepository;
     }
 
-    public async Task<PostDto> Handle(GetPostQuery request, CancellationToken cancellationToken)
+    public Task<IResponse<PostDto>> Handle(GetPostQuery request, CancellationToken cancellationToken)
     {
-        var id = request.Id.ToGuid();
-        var a = _postRepository
-            .Where(p => p.IsPublished == true)
-            .Where(p => p.ID == id)
-            .FirstOrDefault();
-        return new PostDto(a!)!;
+        var post = _postRepository.Find(request.Id.ToGuid());
+        if (post is null)
+            return Task.FromResult(Response.Fail<PostDto>( new NullReferenceException()));
+
+        var res = Response.Ok(new PostDto(post));
+        Console.WriteLine(res.Data);
+        return Task.FromResult(res);
     }
 }

@@ -20,26 +20,13 @@ public class AddTagCommand : IRequest<string>
 
 public class AddTagCommandHandeler : IRequestHandler<AddTagCommand, string>
 {
-    private readonly IAppMongoDbContext _db;
 
-    public AddTagCommandHandeler(IAppMongoDbContext db)
+    public AddTagCommandHandeler()
     {
-        _db = db;
     }
 
     public Task<string> Handle(AddTagCommand request, CancellationToken cancellationToken)
     {
-        var tag = _db.Tags.Find(request.Name);
-        if (tag is not null)
-            return Task.FromResult("tag is exist.");
-        var t = new Tag()
-        {
-            ID = request.Name,
-            TagColour = request.Colour,
-        };
-        _db.Tags.Add(t);
-        _db.SaveChanges();
-
-        return Task.FromResult(JsonConvert.SerializeObject(t,Formatting.Indented));
+        return Task.FromResult("");
     }
 }
