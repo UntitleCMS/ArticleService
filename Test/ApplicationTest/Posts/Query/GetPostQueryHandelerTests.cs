@@ -23,11 +23,11 @@ namespace Application.Posts.Query.Tests
             mockService.Setup(service => service.Find(It.IsAny<Guid>()))
                 .Returns(post);
 
-            var requestMock = new Mock<GetPostQuery>();
+            var requestMock = new Mock<GetPostDetailQuery>();
             requestMock.Setup(req => req.Id)
                 .Returns(Guid.Empty.ToBase64Url());
 
-            var classToTest = new GetPostQueryHandeler(mockService.Object);
+            var classToTest = new GetPostDetailQueryHandeler(mockService.Object);
 
             // Act
             var result = classToTest.Handle(requestMock.Object, default).Result;
@@ -35,7 +35,7 @@ namespace Application.Posts.Query.Tests
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal(post.ID, result.Data!.Id.ToGuid());
-            Assert.Equal(post.Author, result.Data!.OwnerId.ToGuid());
+            Assert.Equal(post.Author, result.Data!.AuthorId.ToGuid());
             Assert.Equal(post.Title, result.Data.Title);
         }
     }
