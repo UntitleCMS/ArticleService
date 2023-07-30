@@ -1,24 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using Domain.Common;
+﻿using Domain.Common;
 
-namespace Domain.Entity
+namespace Domain.Entity;
+
+internal class Comment : TimestampEntity<Guid>
 {
-    public class Comment : TimestampEntity<Guid>
-    {
-        //[Key]
-        //public Guid ID { get; set; }
+    public Guid PostId { get; set; }
+    public Guid? ReplyTo { get; set; }  // null for top-level comments
 
-        [Required]
-        public string Content { get; set; } = string.Empty;
-
-        [Required]
-        public string OwnerID { get; set; } = string.Empty;
-
-        //[ForeignKey("Posts")]
-        //public Guid PostId { get; set; }
-
-        //Post? Post { get; set; }
-    }
+    // content
+    public string Content { get; set; } = string.Empty;
 }

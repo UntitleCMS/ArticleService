@@ -1,59 +1,54 @@
 ﻿using Application.Common.Extentions;
 using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositoris;
+using Application.Common.Mediator;
 using Domain.Entity;
 using MediatR;
-using MongoDB.Bson;
-using MongoDB.Bson.IO;
 using System.Text.Json.Serialization;
 
 namespace Application.Posts.Command;
 
-public class AddPostCommand : IRequest<string>
+public class AddPostCommand : IRequestWrapper<string>
 {
     public string Title { get; set; } = string.Empty;
-    public string Cover { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string CoverImage { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
-    public int[] TagsId { get; set; } = Array.Empty<int>();
-    public bool IsPublish { get; set; }
+    public string[] Tags { get; set; } = Array.Empty<string>();
+    public bool IsPublish { get; set; } = false;
 
     [JsonIgnore]
     public string Sub { get; set; } = string.Empty;
 }
 
-public class AddPostCommandHandler : IRequestHandler<AddPostCommand, string>
+public class AddPostCommandHandler : IRequestHandlerWithResult<AddPostCommand, string>
 {
-    private readonly IAppMongoDbContext _appDbContext;
     private readonly IRepository<Post,Guid> _postRepository;
 
     public AddPostCommandHandler(
-        IAppMongoDbContext appDbContext,
         IRepository<Post, Guid> postRepository)
     {
-        _appDbContext = appDbContext;
         _postRepository = postRepository;
     }
 
-    public async Task<string> Handle(AddPostCommand request, CancellationToken cancellationToken)
+    public async Task<IResponseWrapper<string>> Handle(AddPostCommand request, CancellationToken cancellationToken)
     {
         var post = new Post
         {
-            PostTitle = request.Title,
-            Thumbnail = request.Cover,
-            Contest = request.Content,
+            Title = request.Title,
+            ContentPreviews = request.Description,
+            Cover = request.CoverImage,
+            Content = request.Content,
             IsPublished = request.IsPublish,
-            OwnerID = new Guid(request.Sub),
+            Author = new Guid(request.Sub),
             CreatedAt = DateTime.Now,
             LastUpdated = DateTime.Now,
-            Tags = new List<string>()
-            {
-                "html","css"
-            }
+            Tags = request.Tags
         };
 
         _postRepository.Add(post);
-        await _postRepository.SaveChangesAsync();
+        await _postRepository.SaveChangesAsync(cancellationToken);
 
-        return post.ID.ToBase64Url();
+        return Response.Ok(post.ID.ToBase64Url());
     }
 }

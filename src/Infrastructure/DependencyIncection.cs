@@ -4,6 +4,7 @@ using Domain.Entity;
 using Infrastructure.Persistence;
 using Infrastructure.Repositoris;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,26 +22,14 @@ public static class DependencyIncection
     {
         option(OptionsBuilder);
 
-        //service.AddDbContext<AppDbContext>(options =>
-        //{
-        //    options.UseSqlServer
-        //    (
-        //        Options.DbConnectionString,
-        //        opt=> opt.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
-        //    );
-        //});
+        service.AddSingleton<IMongoClient>(sp
+            =>new MongoClient("mongodb://mongo1:50001/?replicaSet=my-mongo-set"));
 
-        //service.AddScoped<IAppDbContext>( 
-        //    sp => sp.GetRequiredService<AppDbContext>() );
-
-        //service.BuildServiceProvider()
-        //    .GetRequiredService<AppDbContext>()
-        //    .Database
-        //    .EnsureCreated();
-
-        // Add MongoDb
-        service.AddSingleton<IAppMongoDbContext,AppMongoDbContext>();
+        // add repositoris
+        service.AddSingleton<DataContextContext>();
         service.AddScoped<IRepository<Post, Guid>, PostsRepository>();
+        service.AddScoped<IRepositoryPageable<Post, Guid>, PostRepositoryPageable>();
+        service.AddScoped<IRepositoryRemover<Post, Guid>, PostRepositoryRemover>();
     }
 }
 

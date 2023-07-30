@@ -1,11 +1,11 @@
 ﻿using Application.Common.Extentions;
+using Application.Common.Mediator;
 using Application.Posts.Command;
 using Application.Posts.Query;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlogService.Controllers;
 
@@ -14,55 +14,86 @@ namespace BlogService.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly IMediator _mediator;
-
     public PostsController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
+    // GET /posts
     [HttpGet]
-    public async Task<Object> GetAllPost(
-        [FromQuery] int? take,
+    public async Task<object> GetAllPost(
+        [FromQuery, Range(1,100)] int? take,
+        [RegularExpression(@"^[A-Za-z0-9_-]{22}$", ErrorMessage = "Invalid Id.")]
         [FromQuery] string? before,
+        [RegularExpression(@"^[A-Za-z0-9_-]{22}$", ErrorMessage = "Invalid Id.")]
         [FromQuery] string? after)
     {
         bool isHaveReferancePostId = !(before is not null && after is not null);
         bool ishaveBefore = !before.IsNullOrEmpty();
 
-        if ( !isHaveReferancePostId )
-            return BadRequest("Too many reference");
+        if (!isHaveReferancePostId)
+            return BadRequest(new Response<object>()
+            {
+                IsSuccess = false,
+                Message = "Too manny referecne"
+            });
 
         GetAllPostsQuery req = !ishaveBefore && after.IsNullOrEmpty()
             ? new()
-            : new( ishaveBefore ? "BEFORE" : "AFTER", ishaveBefore ? before! : after!, take);
+            : new()
+            {
+                RefPostId = ishaveBefore ? before!.ToGuid() : after!.ToGuid(),
+                Take = take ?? 20
+            };
+
+        req.Take *= ishaveBefore ? 1 : after.IsNullOrEmpty()? 1 : -1;
 
         return await _mediator.Send(req);
     }
 
+    // POST /posts
     [HttpPost]
-    public async Task<string> AddNewPost(
+    public async Task<IActionResult> AddNewPost(
         [FromBody] AddPostCommand newPost,
         [FromQuery] string sub)
     {
         newPost.Sub = sub;
         var a = await _mediator.Send(newPost);
-        return a;
+        return Ok(a);
     }
 
+    // GET /posts/:id
     [HttpGet("{id}")]
-    public async Task<Object> GetPost(string id)
+    public async Task<Object> GetPost(
+        [RegularExpression(@"^[A-Za-z0-9_-]{22}$", ErrorMessage = "Invalid ID")]
+        string id)
     { 
-        return await _mediator.Send(new GetPostQuery(id));
+        return await _mediator.Send(new GetPostDetailQuery() { Id = id});
     }
 
+    // DELETE /posts/:id
     [HttpDelete("{id}")]
-    public async Task<string> DeletePost([FromRoute]string id, string sub)
+    public async Task<IActionResult> DeletePost([FromRoute]string id, string sub)
     {
         var a = await _mediator.Send(new DeletePostCommand()
         {
             PostId = id.ToGuid(),
-            UserId = sub
+            UserId = sub.ToGuid()
         });
-        return a; 
+        return Ok(a); 
+    }
+
+    // PUT /posts/:id
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePost(
+        [FromRoute] string id,
+        [FromQuery] string sub,
+        [FromBody] UpdatePostCommand newPost)
+    {
+        newPost.PostId = id.ToGuid();
+        newPost.AuthorId = sub.ToGuid();
+
+        var a = await _mediator.Send(newPost);
+        return Ok(a);
     }
 }

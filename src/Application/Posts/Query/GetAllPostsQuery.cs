@@ -1,119 +1,55 @@
-﻿using Application.Common.Extentions;
-using Application.Common.Interfaces;
-using Application.Common.Interfaces.Repositoris;
+﻿using Application.Common.Interfaces.Repositoris;
+using Application.Common.Mediator;
+using Application.Common.Models;
 using Application.Posts.Dto;
 using Domain.Entity;
-using MediatR;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Posts.Query;
-public class GetAllPostsQuery : IRequest<IQueryable<PostDto>>
+
+public class GetAllPostsQuery : IRequestWrapper<PageableWrapper<PostDto>>
 {
-    public int Take { get; set; } = 20;
-    public Guid ID { get; set; } = default;
-    [RegularExpression("BEFORE+AFTER", ErrorMessage = """Only "BEFORE" or "AFTER".""")]
-    public string Direction { get; set; }
-    public bool IsPage { get; set; }
-
-    public GetAllPostsQuery(string get, string id, int? take = null)
-    {
-        Take = take ?? Take;
-        Direction = get;
-        IsPage = true;
-        try
-        {
-            ID = new Guid(id);
-        }
-        catch (FormatException)
-        {
-            ID = id.ToGuid();
-        }
-    }
-
-    public GetAllPostsQuery() => IsPage = false;
-
+    public virtual int Take { get; set; } = 20;
+    public virtual Guid? RefPostId { get; set; } = default;
 }
 
-public class GetAllPostsQueryHandeler : IRequestHandler<GetAllPostsQuery, IQueryable<PostDto>>
+public class GetAllPostsQueryHandeler : IRequestHandlerWithResult<GetAllPostsQuery, PageableWrapper<PostDto>>
 {
-    private readonly IAppMongoDbContext _appDbContext;
-    public readonly IRepository<Post, Guid> _postReposirory;
+    public readonly IRepositoryPageable<Post, Guid> _postReposirory;
 
     public GetAllPostsQueryHandeler(
-        IAppMongoDbContext appDbContext ,
-        IRepository<Post, Guid> postReposirory)
+        IRepositoryPageable<Post, Guid> postReposirory)
     {
-        _appDbContext = appDbContext;
         _postReposirory = postReposirory;
     }
 
-    public async Task<IQueryable<PostDto>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+    public async Task<IResponseWrapper<PageableWrapper<PostDto>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
-        //_logger.LogInformation("Handle Request : {}", JsonConvert.SerializeObject(request,Formatting.Indented));
+        IEnumerable<PostDto> res = null!;
 
-        GetPublicedPosts(out var publichedPosts);
-
-        if (request.IsPage)
-            SortPost(request.Direction, request.ID, ref publichedPosts);
-        else
-            publichedPosts = publichedPosts.OrderBy(p => p.CreatedAt);
-
-        var a = publichedPosts
-            .Take(request.Take)
-            .ToList()
-            .Select(p => new PostDto(p));
-
-        //_logger.LogInformation("return data : {}", JsonConvert.SerializeObject(a.Select(p=>new {p.Id,p.OwnerId,p.Title}),Formatting.Indented));
-        return a.AsQueryable();
-
-    }
-
-
-    private void GetPublicedPosts(out IQueryable<Post> publichedPosts )
-    {
-        publichedPosts = _postReposirory
-            .Where(p => p.IsPublished == true);
-    }
-
-    private bool GetRefDate(Guid fromPostId, out DateTime? refDate)
-    {
-        refDate = _postReposirory
-                .Where(p => p.ID == fromPostId)
-                .Select(p => p.CreatedAt)
-                .FirstOrDefault();
-
-        if (refDate == DateTime.MinValue)
+        if (request.Take > 0)
         {
-            //_logger.LogInformation("post ID {} is not found.", fromPostId);
-            refDate = null;
-            return false;
+            res = _postReposirory
+                .GetBefore(request.Take, request.RefPostId)
+                .Select(p => new PostDto(p));
         }
-        return true;
-
-    }
-
-    private void SortPost(string direction, Guid refId, ref IQueryable<Post> posts)
-    {
-        if (!GetRefDate(refId, out var refDate))
+        else if (request.Take < 0)
         {
-            posts = (IQueryable<Post>) Array.Empty<PostDto>().AsQueryable();
-            return;
+            res = _postReposirory
+                .GetAfter(-1 * request.Take, request.RefPostId)
+                .Select(p => new PostDto(p));
+        }
+        else
+        {
+            res = Enumerable.Empty<PostDto>();
         }
 
-        if (direction == "BEFORE")
-            posts = posts 
-                .Where(p => p.CreatedAt < refDate)
-                .OrderByDescending(p=>p.CreatedAt);
-        else
-            posts = posts 
-                .Where(p => p.CreatedAt > refDate)
-                .OrderBy(p=>p.CreatedAt);
+        var rapper = new PageableWrapper<PostDto>()
+        {
+            Data = res.Take(Math.Abs(request.Take)),
+        };
+        rapper.HasNext = res.Count() - 1 == rapper.Data.Count();
+
+        return Response.Ok(rapper);
     }
 
 }

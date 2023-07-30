@@ -1,21 +1,15 @@
 ﻿using Domain.Common;
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Domain.Entity
+namespace Domain.Entity;
+
+public class Tag : BaseEntity<string>
 {
-    public class Tag : BaseEntity<string>
-    {
-        //[Key]
-        //public int ID { get; set; }
-
-        [StringLength(20)]
-        [Required]
-        public override string ID { get; set; } = string.Empty;
-
-        [StringLength(8)]
-        [Required]
-        public string TagColour { get; set; } = string.Empty;
-
-        public ICollection<Post>? Posts { get; set; }
-    }
+    // content
+    public string Colour { get; set; } = string.Empty;
+    public string UnicodeIcon { get; set; } = string.Empty;
 }

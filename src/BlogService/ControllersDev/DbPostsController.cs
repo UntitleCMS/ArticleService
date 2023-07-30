@@ -14,25 +14,19 @@ namespace BlogService.ControllersDev;
 [ApiController]
 public class DbPostsController : ControllerBase
 {
-    private readonly IAppMongoDbContext _mongoDb;
     private readonly IRepository<Post, Guid> _post;
+    private readonly IRepository<Post, Guid> _newpost;
 
-    public DbPostsController(IAppMongoDbContext mongoDb, IRepository<Post, Guid> post)
+    public DbPostsController(IRepository<Post, Guid> post, IRepository<Post, Guid> newpost)
     {
-        _mongoDb = mongoDb;
         _post = post;
+        _newpost = newpost;
     }
 
     [HttpGet("posts")]
     public IActionResult GetPosts()
     {
-        _post.Add(new()
-        {
-            PostTitle = "hello",
-        });
-        //_post.SaveChanges();
-        var a = _post.ToArray();
-       return Ok(a);
+       return Ok(_newpost.Find("QPoZpAIMq0SQp0O5RaZKhQ".ToGuid()));
     }
 
 }

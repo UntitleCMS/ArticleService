@@ -5,28 +5,32 @@ namespace Application.Posts.Dto;
 
 public class PostDto
 {
-    public string Id { get; set; }
-    public string OwnerId { get; set; }
-    public string Title { get; set; }
-    public string Content { get; set; }
-    public bool IsPublish { get; set; }
-    public string? Cover { get; private set; }
-    public DateTime LastUpdate { get; private set; }
-    public DateTime CreateAt { get; private set; }
-    public ICollection<string>? Tags { get; private set; }
-    public ICollection<Comment>? Comments { get; private set; }
+    public string Id { get; set; } = string.Empty;
+    public string AuthorId { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? Content { get; set; }
+    public bool IsPublished { get; set; } 
+    public string? CoverImage { get;  set; }
+    public DateTime LastUpdatedTime { get;  set; }
+    public DateTime CreatedTime { get;  set; }
+    public ICollection<string>? Tags { get;  set; }
 
+    public PostDto()
+    {
+        
+    }
     public PostDto(Post p)
     {
         Id = p.ID.ToBase64Url();
-        OwnerId = p.OwnerID.ToBase64Url();
-        Title = p.PostTitle;
-        Content = p.Contest;
-        IsPublish = p.IsPublished;
-        Cover = p.Thumbnail;
-        LastUpdate = p.LastUpdated;
-        CreateAt = p.CreatedAt;
+        AuthorId = p.Author.ToBase64Url();
+        Title = p.Title;
+        Description = p.ContentPreviews;
+        Content = p.Content;
+        IsPublished = p.IsPublished ?? false;
+        CoverImage = p.Cover;
+        LastUpdatedTime = p.LastUpdated;
+        CreatedTime = p.CreatedAt;
         Tags = p.Tags;
-        Comments = p.Comments;
     }
 }

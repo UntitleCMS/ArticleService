@@ -1,38 +1,33 @@
-﻿using Application.Common.Extentions;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Repositoris;
+using Application.Common.Mediator;
 using Domain.Entity;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Posts.Command;
 
-public class DeletePostCommand : IRequest<string>
+public class DeletePostCommand : IRequestWrapper<string>
 {
     public Guid PostId { get; set; }
-    public string UserId { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
 }
 
-public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand, string>
+public class DeletePostCommandHandler : IRequestHandlerWithResult<DeletePostCommand, string>
 {
-    private readonly IAppMongoDbContext _appDbContext;
-
-    public DeletePostCommandHandler(IAppMongoDbContext appDbContext)
+    private readonly IRepositoryRemover<Post,Guid> _repository;
+    public DeletePostCommandHandler(IRepositoryRemover<Post, Guid> repository)
     {
-        _appDbContext = appDbContext;
+        _repository = repository;
     }
 
-    public Task<string> Handle(DeletePostCommand request, CancellationToken cancellationToken)
+    public Task<IResponseWrapper<string>> Handle(DeletePostCommand request, CancellationToken cancellationToken)
     {
-        var a = _appDbContext.Posts
-            .Where(p => p.ID == request.PostId)
-            .Where(p => p.OwnerID == new Guid(request.UserId));
-
-
-        return Task.FromResult(a.ToString());
-
+        try
+        {
+            _repository .DeleteWithAuthority(request.PostId, request.UserId);
+            _repository.SaveChangesAsync(cancellationToken);
+        }catch (Exception e)
+        {
+            return Task.FromResult(Response.Fail<string>(e));
+        }
+        return Task.FromResult(Response.Ok(""));
     }
 }
