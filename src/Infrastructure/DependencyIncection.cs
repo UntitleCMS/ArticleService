@@ -29,6 +29,7 @@ public static class DependencyIncection
         service.AddSingleton<DataContextContext>();
         service.AddScoped<IRepository<Post, Guid>, PostsRepository>();
         service.AddScoped<IRepositoryPageable<Post, Guid>, PostRepositoryPageable>();
+        service.AddScoped<IRepositoryRemover<Post, Guid>, PostRepositoryRemover>();
     }
 }
 

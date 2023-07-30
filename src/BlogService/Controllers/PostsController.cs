@@ -3,9 +3,7 @@ using Application.Common.Mediator;
 using Application.Posts.Command;
 using Application.Posts.Query;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,14 +14,14 @@ namespace BlogService.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly IMediator _mediator;
-
     public PostsController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
+    // GET /posts
     [HttpGet]
-    public async Task<Object> GetAllPost(
+    public async Task<object> GetAllPost(
         [FromQuery, Range(1,100)] int? take,
         [RegularExpression(@"^[A-Za-z0-9_-]{22}$", ErrorMessage = "Invalid Id.")]
         [FromQuery] string? before,
@@ -53,6 +51,7 @@ public class PostsController : ControllerBase
         return await _mediator.Send(req);
     }
 
+    // POST /posts
     [HttpPost]
     public async Task<IActionResult> AddNewPost(
         [FromBody] AddPostCommand newPost,
@@ -63,22 +62,38 @@ public class PostsController : ControllerBase
         return Ok(a);
     }
 
+    // GET /posts/:id
     [HttpGet("{id}")]
     public async Task<Object> GetPost(
         [RegularExpression(@"^[A-Za-z0-9_-]{22}$", ErrorMessage = "Invalid ID")]
         string id)
     { 
-        return await _mediator.Send(new GetPostQuery(id));
+        return await _mediator.Send(new GetPostDetailQuery() { Id = id});
     }
 
+    // DELETE /posts/:id
     [HttpDelete("{id}")]
-    public async Task<string> DeletePost([FromRoute]string id, string sub)
+    public async Task<IActionResult> DeletePost([FromRoute]string id, string sub)
     {
         var a = await _mediator.Send(new DeletePostCommand()
         {
             PostId = id.ToGuid(),
-            UserId = sub
+            UserId = sub.ToGuid()
         });
-        return a; 
+        return Ok(a); 
+    }
+
+    // PUT /posts/:id
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePost(
+        [FromRoute] string id,
+        [FromQuery] string sub,
+        [FromBody] UpdatePostCommand newPost)
+    {
+        newPost.PostId = id.ToGuid();
+        newPost.AuthorId = sub.ToGuid();
+
+        var a = await _mediator.Send(newPost);
+        return Ok(a);
     }
 }

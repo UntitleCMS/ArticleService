@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Repositoris;
+﻿using Application.Common.Extentions;
+using Application.Common.Interfaces.Repositoris;
 using Domain.Entity;
 using Infrastructure.Persistence;
 using MongoDB.Driver;
@@ -111,9 +112,12 @@ public class PostsRepository : IRepository<Post,Guid>
 
     public void Update(Post entity)
     {
-        var fillter = Builders<Post>.Filter.Empty;
-        var update = Builders<Post>.Update.Set(p=>p,entity);
-        _postsCol.UpdateOne(Session, fillter,update);
+        var res = _postsCol.ReplaceOne(Session, p =>
+            p.ID == entity.ID &&
+            p.Author == entity.Author,
+            entity);
+        if (res.ModifiedCount == 0)
+            throw new Exception($"Post id {entity.ID.ToBase64Url()} of {entity.Author.ToBase64Url()} not found.");
     }
 
     public void UpdateRange(IEnumerable<Post> entities)

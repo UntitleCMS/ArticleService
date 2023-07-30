@@ -1,14 +1,12 @@
-﻿using Application.Common.Extentions;
-using Application.Common.Interfaces.Repositoris;
+﻿using Application.Common.Interfaces.Repositoris;
 using Application.Common.Mediator;
 using Application.Common.Models;
 using Application.Posts.Dto;
 using Domain.Entity;
-using System.ComponentModel.DataAnnotations;
 
 namespace Application.Posts.Query;
 
-public class GetAllPostsQuery : IRequestWrap<PageableWrapper<PostDto>>
+public class GetAllPostsQuery : IRequestWrapper<PageableWrapper<PostDto>>
 {
     public virtual int Take { get; set; } = 20;
     public virtual Guid? RefPostId { get; set; } = default;
@@ -24,7 +22,7 @@ public class GetAllPostsQueryHandeler : IRequestHandlerWithResult<GetAllPostsQue
         _postReposirory = postReposirory;
     }
 
-    public async Task<IResponse<PageableWrapper<PostDto>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+    public async Task<IResponseWrapper<PageableWrapper<PostDto>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
         IEnumerable<PostDto> res = null!;
 
