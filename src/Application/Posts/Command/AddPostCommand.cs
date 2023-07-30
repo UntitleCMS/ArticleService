@@ -8,13 +8,13 @@ using System.Text.Json.Serialization;
 
 namespace Application.Posts.Command;
 
-public class AddPostCommand : IRequestWrap<string>
+public class AddPostCommand : IRequestWrapper<string>
 {
     public string Title { get; set; } = string.Empty;
-    public string SubTitle { get; set; } = string.Empty;
-    public string Cover { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string CoverImage { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
-    public string[] TagsId { get; set; } = Array.Empty<string>();
+    public string[] Tags { get; set; } = Array.Empty<string>();
     public bool IsPublish { get; set; } = false;
 
     [JsonIgnore]
@@ -31,23 +31,23 @@ public class AddPostCommandHandler : IRequestHandlerWithResult<AddPostCommand, s
         _postRepository = postRepository;
     }
 
-    public async Task<IResponse<string>> Handle(AddPostCommand request, CancellationToken cancellationToken)
+    public async Task<IResponseWrapper<string>> Handle(AddPostCommand request, CancellationToken cancellationToken)
     {
         var post = new Post
         {
             Title = request.Title,
-            ContentPreviews = request.SubTitle,
-            Cover = request.Cover,
+            ContentPreviews = request.Description,
+            Cover = request.CoverImage,
             Content = request.Content,
             IsPublished = request.IsPublish,
             Author = new Guid(request.Sub),
             CreatedAt = DateTime.Now,
             LastUpdated = DateTime.Now,
-            Tags = request.TagsId
+            Tags = request.Tags
         };
 
         _postRepository.Add(post);
-        await _postRepository.SaveChangesAsync();
+        await _postRepository.SaveChangesAsync(cancellationToken);
 
         return Response.Ok(post.ID.ToBase64Url());
     }
