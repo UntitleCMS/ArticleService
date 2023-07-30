@@ -2,7 +2,7 @@
 
 public static class Response
 {
-    public static IResponse<T> Ok<T>(T a)
+    public static IResponseWrapper<T> Ok<T>(T a)
     {
         return new Response<T>()
         {
@@ -11,7 +11,7 @@ public static class Response
             Message = "OK"
         };
     }
-    public static IResponse<T> Fail<T>(Exception a, T? data = default)
+    public static IResponseWrapper<T> Fail<T>(Exception a, T? data = default)
     {
         return new Response<T>()
         {
@@ -25,7 +25,7 @@ public static class Response
 }
 
 
-public class Response<T> : IResponse<T>
+public class Response<T> : IResponseWrapper<T>
 {
     public T? Data { get; set; }
     public string Message { get; set; } = string.Empty;

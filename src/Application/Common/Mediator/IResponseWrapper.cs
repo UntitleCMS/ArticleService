@@ -1,11 +1,11 @@
 ﻿namespace Application.Common.Mediator;
 
-public interface IResponse
+public interface IResponseWrapper
 {
 
 }
 
-public interface IResponse<T> : IResponse
+public interface IResponseWrapper<T> : IResponseWrapper
 {
     public T? Data { get; set; }
     public string Message { get; set; }

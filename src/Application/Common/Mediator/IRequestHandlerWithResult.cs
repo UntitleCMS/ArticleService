@@ -3,7 +3,7 @@
 namespace Application.Common.Mediator;
 
 public interface IRequestHandlerWithResult<TRequest, TResponse>
-    : IRequestHandler<TRequest, IResponse<TResponse>>
-    where TRequest : IRequestWrap<TResponse>
+    : IRequestHandler<TRequest, IResponseWrapper<TResponse>>
+    where TRequest : IRequestWrapper<TResponse>
 {
 }

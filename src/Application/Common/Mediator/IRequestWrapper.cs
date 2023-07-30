@@ -6,6 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Common.Mediator;
-public interface IRequestWrap<T> : IRequest<IResponse<T>>
+public interface IRequestWrapper<T> : IRequest<IResponseWrapper<T>>
 {
 }
