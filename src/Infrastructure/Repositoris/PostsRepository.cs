@@ -66,11 +66,11 @@ public class PostsRepository : IRepository<Post,Guid>
         _session = null;
     }
 
-    public Post Find(Guid id)
+    public Post? Find(Guid id)
     {
         var p =  _postsCol.Find( p=>p.Id==id )
             .FirstOrDefault();
-        return p.ToPost();
+        return p?.ToPost();
     }
 
     public ValueTask<Post> FindAsync(Guid id)

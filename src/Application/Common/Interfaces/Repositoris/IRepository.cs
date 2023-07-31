@@ -8,7 +8,7 @@ public interface IRepository<TEntity, TID>
     where TEntity : BaseEntity<TID>
     where TID : IEquatable<TID>
 {
-    TEntity Find(TID id);
+    TEntity? Find(TID id);
     ValueTask<TEntity> FindAsync(TID id);
     void Add(TEntity entity);
     void AddRange(IEnumerable<TEntity> entities);
