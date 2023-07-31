@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence;
 
-public class DataContextContext
+public class DataContext
 {
     private readonly MongoClient mongoClient;
     private readonly IMongoDatabase database;
 
-    public DataContextContext()
+    public DataContext()
     {
         var settings = MongoClientSettings.FromConnectionString("mongodb://mongo1:50001/?replicaSet=my-mongo-set");
         settings.LoggingSettings = new LoggingSettings();

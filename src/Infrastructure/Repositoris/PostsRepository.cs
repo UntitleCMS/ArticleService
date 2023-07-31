@@ -1,6 +1,8 @@
 ﻿using Application.Common.Extentions;
 using Application.Common.Interfaces.Repositoris;
 using Domain.Entity;
+using Infrastructure.Collections;
+using Infrastructure.Common.Mappers;
 using Infrastructure.Persistence;
 using MongoDB.Driver;
 using System.Collections;
@@ -10,16 +12,16 @@ namespace Infrastructure.Repositoris;
 
 public class PostsRepository : IRepository<Post,Guid>
 {
-    private readonly DataContextContext _mongo;
-    private readonly IMongoCollection<Post> _postsCol;
-    private readonly IQueryable<Post> _postsQ;
+    private readonly DataContext _mongo;
+    private readonly IMongoCollection<PostCollection> _postsCol;
+    private readonly IQueryable<PostCollection> _postsQ;
 
     private IClientSessionHandle? _session;
 
-    public PostsRepository(DataContextContext mongo)
+    public PostsRepository(DataContext mongo)
     {
         _mongo = mongo;
-        _postsCol = _mongo.Collection<Post>();
+        _postsCol = _mongo.Collection<PostCollection>();
         _postsQ = _postsCol.AsQueryable();
     }
 
@@ -42,12 +44,14 @@ public class PostsRepository : IRepository<Post,Guid>
 
     public void Add(Post entity)
     {
-        _postsCol.InsertOne(Session, entity);
+        var post = entity.ToPostCollection();
+        _postsCol.InsertOne(Session, post);
+        entity.ID = post.Id;
     }
 
     public void AddRange(IEnumerable<Post> entities)
     {
-        _postsCol.InsertMany(entities);
+        _postsCol.InsertMany(entities.Select(p =>p.ToPostCollection()));
     }
 
     public void Dispose()
@@ -64,39 +68,47 @@ public class PostsRepository : IRepository<Post,Guid>
 
     public Post Find(Guid id)
     {
-        var p =  _postsCol.Find( p=>p.ID==id )
+        var p =  _postsCol.Find( p=>p.Id==id )
             .FirstOrDefault();
-        return p;
+        return p.ToPost();
     }
 
     public ValueTask<Post> FindAsync(Guid id)
     {
-        return new ValueTask<Post>( _postsCol.FindAsync(p => p.ID == id).Result.Single());
+        return new ValueTask<Post>
+        (
+            _postsCol.FindAsync(p => p.Id == id)
+            .Result
+            .Single()
+            .ToPost()
+        );
     }
 
     public IEnumerator<Post> GetEnumerator()
     {
-        return _postsQ.GetEnumerator();
+        return _postsQ.Select(p=>p.ToPost()).GetEnumerator();
     }
 
     public void Remove(Post entity)
     {
-        _postsCol.FindOneAndDelete(p => p == entity);
+        _postsCol.FindOneAndDelete(p =>
+            p.Id == entity.ID &&
+            p.AuthorId==entity.Author);
     }
 
     public void RemoveById(Guid entityId)
     {
-        _postsCol.FindOneAndDelete(p => p.ID == entityId);
+        _postsCol.FindOneAndDelete(p => p.Id == entityId);
     }
 
     public void RemoveRange(IEnumerable<Post> entities)
     {
-        _postsCol.DeleteMany(p => entities.Contains(p));
+        _postsCol.DeleteMany(p => entities.Any(q=>q.ID==p.Id && q.Author==p.AuthorId));
     }
 
     public void RemoveRange(Expression<Func<Post, bool>> predicate)
     {
-        _postsCol.DeleteMany(predicate);
+        throw new NotImplementedException();
     }
 
     public void SaveChanges()
@@ -113,9 +125,9 @@ public class PostsRepository : IRepository<Post,Guid>
     public void Update(Post entity)
     {
         var res = _postsCol.ReplaceOne(Session, p =>
-            p.ID == entity.ID &&
-            p.Author == entity.Author,
-            entity);
+            p.Id == entity.ID &&
+            p.AuthorId == entity.Author,
+            entity.ToPostCollection());
         if (res.ModifiedCount == 0)
             throw new Exception($"Post id {entity.ID.ToBase64Url()} of {entity.Author.ToBase64Url()} not found.");
     }

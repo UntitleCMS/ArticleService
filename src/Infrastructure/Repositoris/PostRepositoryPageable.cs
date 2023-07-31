@@ -1,18 +1,21 @@
 ﻿using Application.Common.Interfaces.Repositoris;
 using Domain.Entity;
+using Infrastructure.Collections;
+using Infrastructure.Common.Mappers;
 using Infrastructure.Persistence;
 using MongoDB.Driver;
-using System.Xml;
 
 namespace Infrastructure.Repositoris;
 
 public class PostRepositoryPageable : IRepositoryPageable<Post, Guid>
 {
-    private readonly DataContextContext _context;
+    private readonly DataContext _context;
+    private readonly IMongoCollection<PostCollection> _posts;
 
-    public PostRepositoryPageable(DataContextContext ctx)
+    public PostRepositoryPageable(DataContext ctx)
     { 
         _context = ctx;
+        _posts = _context.Collection<PostCollection>();
     }
     public void Dispose() { }
 
@@ -22,8 +25,8 @@ public class PostRepositoryPageable : IRepositoryPageable<Post, Guid>
 
         if (referance is not null)
         {
-            var cutoffDate = _context.Collection<Post>()
-                .Find(p => p.ID == referance)
+            var cutoffDate = _posts
+                .Find(p => p.Id == referance)
                 .FirstOrDefault();
 
             if (cutoffDate is null)
@@ -32,13 +35,15 @@ public class PostRepositoryPageable : IRepositoryPageable<Post, Guid>
             dateref = cutoffDate.CreatedAt;
         }
 
-        var filter = Builders<Post>.Filter.Gt(e => e.CreatedAt, dateref);
-        var sort = Builders<Post>.Sort.Ascending(e => e.CreatedAt);
-        var entities = _context.Collection<Post>()
+        var filter = Builders<PostCollection>.Filter.Gt(e => e.CreatedAt, dateref);
+        var sort = Builders<PostCollection>.Sort.Ascending(e => e.CreatedAt);
+
+        var entities = _posts
             .Find(filter)
             .Sort(sort)
             .Limit(range+1)
-            .ToList();
+            .ToList()
+            .Select(p => p.ToPost());
 
         return entities;
     }
@@ -49,8 +54,8 @@ public class PostRepositoryPageable : IRepositoryPageable<Post, Guid>
 
         if (referance is not null)
         {
-            var cutoffDate = _context.Collection<Post>()
-                .Find(p => p.ID == referance)
+            var cutoffDate = _posts
+                .Find(p => p.Id == referance)
                 .FirstOrDefault();
 
             if (cutoffDate is null)
@@ -59,13 +64,14 @@ public class PostRepositoryPageable : IRepositoryPageable<Post, Guid>
             dateref = cutoffDate.CreatedAt;
         }
 
-        var filter = Builders<Post>.Filter.Lt(e => e.CreatedAt, dateref);
-        var sort = Builders<Post>.Sort.Descending(e => e.CreatedAt);
-        var entities = _context.Collection<Post>()
+        var filter = Builders<PostCollection>.Filter.Lt(e => e.CreatedAt, dateref);
+        var sort = Builders<PostCollection>.Sort.Descending(e => e.CreatedAt);
+        var entities = _posts
             .Find(filter)
             .Sort(sort)
             .Limit(range+1)
-            .ToList();
+            .ToList()
+            .Select(p =>p.ToPost());
 
         return entities;
     }
