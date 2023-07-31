@@ -1,6 +1,7 @@
 ﻿
 using Application.Common.Interfaces.Repositoris;
 using Domain.Entity;
+using Infrastructure.Collections;
 using Infrastructure.Persistence;
 using MongoDB.Driver;
 
@@ -8,19 +9,19 @@ namespace Infrastructure.Repositoris;
 
 public class PostRepositoryRemover : IRepositoryRemover<Post, Guid>
 {
-    private DataContextContext _context;
-    private IMongoCollection<Post> _posts;
+    private readonly DataContext _context;
+    private readonly IMongoCollection<PostCollection> _posts;
 
-    public PostRepositoryRemover(DataContextContext context)
+    public PostRepositoryRemover(DataContext context)
     {
         _context = context;
-        _posts = _context.Collection<Post>();
+        _posts = _context.Collection<PostCollection>();
     }
 
     public void DeleteWithAuthority(Guid id, Guid authorId)
     {
         var res
-            = _posts.FindOneAndDelete( p=>p.ID == id && p.Author == authorId)
+            = _posts.FindOneAndDelete( p=>p.Id == id && p.AuthorId == authorId)
             ?? throw new Exception($"Id {id} of author {authorId} not found.");
     }
 

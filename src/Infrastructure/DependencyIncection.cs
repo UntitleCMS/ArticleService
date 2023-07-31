@@ -26,7 +26,7 @@ public static class DependencyIncection
             =>new MongoClient("mongodb://mongo1:50001/?replicaSet=my-mongo-set"));
 
         // add repositoris
-        service.AddSingleton<DataContextContext>();
+        service.AddSingleton<DataContext>();
         service.AddScoped<IRepository<Post, Guid>, PostsRepository>();
         service.AddScoped<IRepositoryPageable<Post, Guid>, PostRepositoryPageable>();
         service.AddScoped<IRepositoryRemover<Post, Guid>, PostRepositoryRemover>();

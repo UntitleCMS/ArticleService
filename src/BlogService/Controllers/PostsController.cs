@@ -91,7 +91,13 @@ public class PostsController : ControllerBase
         [FromBody] UpdatePostCommand newPost)
     {
         newPost.PostId = id.ToGuid();
-        newPost.AuthorId = sub.ToGuid();
+        try
+        {
+            newPost.AuthorId = sub.ToGuid();
+        }catch (Exception)
+        {
+            newPost.AuthorId = new Guid(sub);
+        }
 
         var a = await _mediator.Send(newPost);
         return Ok(a);
