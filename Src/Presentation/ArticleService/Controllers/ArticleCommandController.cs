@@ -49,4 +49,11 @@ public class ArticleCommandController : SubControllerBase
     // PATCH /articles/:id/unsave
 
     // DELETE /articles/:id
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(
+        [FromRoute ] string id
+    ){
+        var command = new DeleteArticleCommand(id,Sub);
+        return Ok(await _mediator.Send(command));
+    }
 }

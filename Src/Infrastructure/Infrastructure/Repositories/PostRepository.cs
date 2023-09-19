@@ -24,6 +24,29 @@ public class PostRepository : IPostRepository
         _logger = logger;
     }
 
+    public Task Delete(string id, string? sub = null, CancellationToken cancellationToken = default)
+    {
+        var Id = new Guid(Base64UrlEncoder.DecodeBytes(id));
+        var filter = Builders<PostCollection>.Filter.And(
+            Builders<PostCollection>.Filter.Eq(i=>i.ID, Id),
+            Builders<PostCollection>.Filter.Eq(i=>i.AuthorId, sub));
+
+        var a = _collection.DeleteOneAsync(filter, cancellationToken);
+
+        if(a.IsCompletedSuccessfully && a.Exception is not null)
+            return Task.FromException(a.Exception);
+
+        if (a.Result.DeletedCount < 1)
+            return Task.FromException(new ArticleNotFoundException());
+
+        if (a.Result.DeletedCount > 1)
+            return Task.FromException(new Exception("Delete Too Many Article"));
+
+        _logger.LogInformation("Aritcel[{}] by[{}] is deleted",id,sub);
+
+        return Task.CompletedTask ;
+    }
+
     public Task<PostEntity> FindById(string id, string? sub = null, CancellationToken cancellationToken = default)
     {
         try
