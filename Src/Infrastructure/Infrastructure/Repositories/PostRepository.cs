@@ -71,7 +71,8 @@ public class PostRepository : IPostRepository
                     LastUpdated = article.LastUpdate,
 
                     SavedBy = article.SavedBy.Where(i => i == sub).ToArray(),
-                    LikedBy = article.LikedBy.Where(i => i == sub).ToArray()
+                    LikedBy = article.LikedBy.Where(i => i == sub).ToArray(),
+                    LikedCount = article.LikedBy.Count()
                 }).FirstOrDefault();
 
 

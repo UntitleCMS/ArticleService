@@ -13,6 +13,7 @@ public class PostEntity : BaseAuditableEntity<Guid,string>
     public virtual bool IsPublished { get; set; } = false;
 
     // state
+    public virtual int LikedCount { get; set; }
     public virtual IList<string> LikedBy { get; set; } = Array.Empty<string>();
     public virtual IList<string> SavedBy { get; set; } = Array.Empty<string>();
 }

@@ -37,6 +37,7 @@ public record GetArticleQueryResponse
     public virtual DateTime LastUpdatedTime { get; set; }
 
     // state
+    public virtual int LikeCount { get; set; }
     public virtual bool? IsLiked { get; set; }
     public virtual bool? IsSaved { get; set; }
 }
@@ -74,8 +75,9 @@ public class GetArticleQueryHandler : GetArticleQueryHandlerType
             CreatedTime = article.CreatedAt,
 
             IsPublished = article.IsPublished,
-            IsLiked = article.LikedBy.Contains(request.sub??request.ArticleId),
-            IsSaved = article.SavedBy.Contains(request.sub??request.ArticleId)
+            IsLiked = article.LikedBy.Contains(request.sub ?? request.ArticleId),
+            IsSaved = article.SavedBy.Contains(request.sub ?? request.ArticleId),
+            LikeCount = article.LikedCount
         }) ;
     }
 }
