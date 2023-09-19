@@ -27,6 +27,19 @@ public class ArticleCommandController : SubControllerBase
     }
 
     // PUT /articles/:id
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePost(
+        [FromRoute] string id,
+        [FromBody] UpdateArticleCommand command
+    ) {
+        command.ID = id;
+        command.Sub = Sub;
+        //Console.WriteLine("#####################################\n\n\n\n\n");
+        //Console.WriteLine(command.ID);
+        //Console.WriteLine(command.Sub);
+        return Ok(await _mediator.Send(command));
+        //return Ok(new { id });
+    }
 
     // PATCH /articles/:id/publish
     // PATCH /articles/:id/unpublish

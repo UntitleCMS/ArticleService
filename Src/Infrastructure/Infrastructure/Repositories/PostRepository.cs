@@ -15,6 +15,7 @@ public class PostRepository : IPostRepository
     private readonly IMongoClient _mongo;
     private readonly IMongoDatabase _db;
     private readonly IMongoCollection<PostCollection> _collection;
+
     public PostRepository(IMongoClient mongo, ILogger<PostRepository> logger)
     {
         _mongo = mongo;
@@ -30,7 +31,7 @@ public class PostRepository : IPostRepository
             Guid Id;
             Id = new Guid(Base64UrlEncoder.DecodeBytes(id));
             var result = _collection.AsQueryable()
-                .Where(i=>i.ID == Id)
+                .Where(i => i.ID == Id)
                 .Select(article => new PostEntity()
                 {
                     ID = article.ID,
@@ -54,7 +55,7 @@ public class PostRepository : IPostRepository
             if (result is null)
                 return Task.FromException<PostEntity>(new ArticleNotFoundException());
 
-            _logger.LogInformation("Find post[{postID}] with sub[{sub}] : {result}", id, sub, result.ToJson(new() { Indent = true}));
+            _logger.LogInformation("Find post[{postID}] with sub[{sub}] : {result}", id, sub, result.ToJson(new() { Indent = true }));
 
             return Task.FromResult(result);
 
@@ -94,6 +95,34 @@ public class PostRepository : IPostRepository
         {
             return Task.FromException(ex);
         }
+
+        return Task.CompletedTask;
+    }
+
+    public Task Update(PostEntity post, CancellationToken cancellationToken = default)
+    {
+        var updateSet = Builders<PostCollection>.Update
+            .Set(i => i.Title, post.Title)
+            .Set(i => i.Content, post.Content)
+            .Set(i => i.ContentPreviews, post.ContentPreviews)
+            .Set(i => i.IsPublished, post.IsPublished)
+            .Set(i => i.Cover, post.Cover)
+            .Set(i => i.Tags, post.Tags)
+            .Set(i => i.LastUpdate, DateTime.Now);
+
+
+        var FilterBuilder = Builders<PostCollection>.Filter;
+        var fillterAuthor = FilterBuilder.And(
+            FilterBuilder.Eq(i => i.ID, post.ID),
+            FilterBuilder.Eq(i => i.AuthorId, post.AuthorId));
+
+        var a = _collection.UpdateOneAsync(
+            fillterAuthor,
+            updateSet,
+            cancellationToken: cancellationToken);
+
+        if (a.IsCompleted && a.Exception is not null)
+            return Task.FromException(a.Exception);
 
         return Task.CompletedTask;
     }
