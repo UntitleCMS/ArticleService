@@ -119,6 +119,35 @@ public class PostRepository : IPostRepository
         }
     }
 
+    public Task Save(string id, string sub, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var filter = Builders<PostCollection>.Filter
+                .Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id)));
+
+            var update = Builders<PostCollection>.Update
+                .AddToSet(i => i.SavedBy, sub);
+
+            var res = _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+
+            if (res.Result.MatchedCount == 0)
+                return Task.FromException(new ArticleNotFoundException());
+
+            if (res.Result.ModifiedCount == 0)
+                return Task.FromException(new Exception("Not Change"));
+
+            _logger.LogInformation("user[{}] is save article[{}]", id, sub);
+
+            return Task.CompletedTask;
+        }
+        catch (Exception e)
+        {
+            return Task.FromException(e);
+        }
+
+    }
+
     public Task SavePost(ref PostEntity post, CancellationToken cancellationToken = default)
     {
         try
@@ -170,6 +199,34 @@ public class PostRepository : IPostRepository
                 return Task.FromException(new Exception("Not Change"));
 
             _logger.LogInformation("user[{}] is unlike article[{}]", id, sub);
+
+            return Task.CompletedTask;
+        }
+        catch (Exception e)
+        {
+            return Task.FromException(e);
+        }
+    }
+
+    public Task UnSave(string id, string sub, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var filter = Builders<PostCollection>.Filter
+                .Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id)));
+
+            var update = Builders<PostCollection>.Update
+                .Pull(i => i.SavedBy, sub);
+
+            var res = _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+
+            if (res.Result.MatchedCount == 0)
+                return Task.FromException(new ArticleNotFoundException());
+
+            if (res.Result.ModifiedCount == 0)
+                return Task.FromException(new Exception("Not Change"));
+
+            _logger.LogInformation("user[{}] is un-save article[{}]", id, sub);
 
             return Task.CompletedTask;
         }

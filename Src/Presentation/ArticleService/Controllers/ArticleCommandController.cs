@@ -60,7 +60,20 @@ public class ArticleCommandController : SubControllerBase
         return Ok(res);
     }
     // PATCH /articles/:id/save
+    [HttpPatch("{id}/save")]
+    public async Task<IActionResult> Save([FromRoute] string id)
+    {
+        var res = await _mediator.Send(new SaveArticleCommand(id,Sub));
+        return Ok(res);
+    }
+
     // PATCH /articles/:id/unsave
+    [HttpPatch("{id}/unsave")]
+    public async Task<IActionResult> UnSave([FromRoute] string id)
+    {
+        var res = await _mediator.Send(new UnsaveArticleCommand(id,Sub));
+        return Ok(res);
+    }
 
     // DELETE /articles/:id
     [HttpDelete("{id}")]
