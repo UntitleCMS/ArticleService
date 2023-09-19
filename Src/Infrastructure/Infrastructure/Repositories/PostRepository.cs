@@ -28,12 +28,12 @@ public class PostRepository : IPostRepository
     {
         var Id = new Guid(Base64UrlEncoder.DecodeBytes(id));
         var filter = Builders<PostCollection>.Filter.And(
-            Builders<PostCollection>.Filter.Eq(i=>i.ID, Id),
-            Builders<PostCollection>.Filter.Eq(i=>i.AuthorId, sub));
+            Builders<PostCollection>.Filter.Eq(i => i.ID, Id),
+            Builders<PostCollection>.Filter.Eq(i => i.AuthorId, sub));
 
         var a = _collection.DeleteOneAsync(filter, cancellationToken);
 
-        if(a.IsCompletedSuccessfully && a.Exception is not null)
+        if (a.IsCompletedSuccessfully && a.Exception is not null)
             return Task.FromException(a.Exception);
 
         if (a.Result.DeletedCount < 1)
@@ -42,9 +42,9 @@ public class PostRepository : IPostRepository
         if (a.Result.DeletedCount > 1)
             return Task.FromException(new Exception("Delete Too Many Article"));
 
-        _logger.LogInformation("Aritcel[{}] by[{}] is deleted",id,sub);
+        _logger.LogInformation("Aritcel[{}] by[{}] is deleted", id, sub);
 
-        return Task.CompletedTask ;
+        return Task.CompletedTask;
     }
 
     public Task<PostEntity> FindById(string id, string? sub = null, CancellationToken cancellationToken = default)
@@ -91,6 +91,34 @@ public class PostRepository : IPostRepository
 
     }
 
+    public Task Like(string id, string sub, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var filter = Builders<PostCollection>.Filter
+                .Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id)));
+
+            var update = Builders<PostCollection>.Update
+                .AddToSet(i => i.LikedBy, sub);
+
+            var res = _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+
+            if (res.Result.MatchedCount == 0)
+                return Task.FromException(new ArticleNotFoundException());
+
+            if (res.Result.ModifiedCount == 0)
+                return Task.FromException(new Exception("Not Change"));
+
+            _logger.LogInformation("user[{}] is like article[{}]", id, sub);
+
+            return Task.CompletedTask;
+        }
+        catch (Exception e)
+        {
+            return Task.FromException(e);
+        }
+    }
+
     public Task SavePost(ref PostEntity post, CancellationToken cancellationToken = default)
     {
         try
@@ -121,6 +149,34 @@ public class PostRepository : IPostRepository
         }
 
         return Task.CompletedTask;
+    }
+
+    public Task UnLike(string id, string sub, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var filter = Builders<PostCollection>.Filter
+                .Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id)));
+
+            var update = Builders<PostCollection>.Update
+                .Pull(i => i.LikedBy, sub);
+
+            var res = _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+
+            if (res.Result.MatchedCount == 0)
+                return Task.FromException(new ArticleNotFoundException());
+
+            if (res.Result.ModifiedCount == 0)
+                return Task.FromException(new Exception("Not Change"));
+
+            _logger.LogInformation("user[{}] is unlike article[{}]", id, sub);
+
+            return Task.CompletedTask;
+        }
+        catch (Exception e)
+        {
+            return Task.FromException(e);
+        }
     }
 
     public Task Update(PostEntity post, CancellationToken cancellationToken = default)

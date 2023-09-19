@@ -8,4 +8,6 @@ public interface IPostRepository
     Task Update(PostEntity post, CancellationToken cancellationToken = default);
     Task<PostEntity> FindById(string id, string? sub = default, CancellationToken cancellationToken = default);
     Task Delete(string id, string? sub = default, CancellationToken cancellationToken = default);
+    Task Like(string id, string sub, CancellationToken cancellationToken = default);
+    Task UnLike(string id, string sub, CancellationToken cancellationToken = default);
 }

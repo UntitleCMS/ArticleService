@@ -43,8 +43,22 @@ public class ArticleCommandController : SubControllerBase
 
     // PATCH /articles/:id/publish
     // PATCH /articles/:id/unpublish
+
     // PATCH /articles/:id/like
+    [HttpPatch("{id}/like")]
+    public async Task<IActionResult> Like([FromRoute] string id)
+    {
+        var res = await _mediator.Send(new LikeArticleCommand(id,Sub));
+        return Ok(res);
+    }
+
     // PATCH /articles/:id/unlike
+    [HttpPatch("{id}/unlike")]
+    public async Task<IActionResult> Unlike([FromRoute] string id)
+    {
+        var res = await _mediator.Send(new UnlikeArticleCommand(id,Sub));
+        return Ok(res);
+    }
     // PATCH /articles/:id/save
     // PATCH /articles/:id/unsave
 
