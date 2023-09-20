@@ -42,7 +42,20 @@ public class ArticleCommandController : SubControllerBase
     }
 
     // PATCH /articles/:id/publish
+    [HttpPatch("{id}/publish")]
+    public async Task<IActionResult> Publish([FromRoute]string id)
+    {
+        var res = await _mediator.Send(new PublishArticleCommand(id,Sub));
+        return Ok(res);
+    }
+
     // PATCH /articles/:id/unpublish
+    [HttpPatch("{id}/unpublish")]
+    public async Task<IActionResult> Unpublish([FromRoute]string id)
+    {
+        var res = await _mediator.Send(new UnpublishArticleCommand(id,Sub));
+        return Ok(res);
+    }
 
     // PATCH /articles/:id/like
     [HttpPatch("{id}/like")]
