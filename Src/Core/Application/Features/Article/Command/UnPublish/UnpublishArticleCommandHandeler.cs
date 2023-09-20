@@ -1,10 +1,8 @@
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Common.Mediator;
 using Application.Common.Repositories;
 
-namespace Application.Features.Article.Command;
-
-public record UnpublishArticleCommand(string id, string sub) : IRequestWraped<string>;
+namespace Application.Features.Article.Command.UnPublish;
 
 public class UnpublishArticleCommandHandeler : RequestPipeHandelerBase<UnpublishArticleCommand, string>
 {

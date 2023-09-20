@@ -2,7 +2,7 @@ using Application.Common.Interfaces;
 using Application.Common.Mediator;
 using Application.Common.Repositories;
 
-namespace Application.Features.Article.Command;
+namespace Application.Features.Article.Command.PublishArticle;
 
 using ResponseType = String;
 
@@ -19,7 +19,7 @@ public class PublishArticleCommandHandeler : RequestPipeHandelerBase<PublishArti
 
     protected override async Task<IResponseWrapper<string>> Execute(PublishArticleCommand request)
     {
-        await _repo.Publish(request.id,request.sub);
+        await _repo.Publish(request.id, request.sub);
         return Ok("Publish success");
     }
 }

@@ -1,6 +1,6 @@
 using Application.Common.Mediator;
 
-namespace Application.Features.Article.Command;
+namespace Application.Features.Article.Command.PublishArticle;
 
 using ResponseType = String;
 
