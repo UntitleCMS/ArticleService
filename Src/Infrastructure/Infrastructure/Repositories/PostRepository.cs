@@ -119,6 +119,26 @@ public class PostRepository : IPostRepository
         }
     }
 
+    public async Task Publish(string id, string sub, CancellationToken cancellationToken = default)
+    {
+        var filter = Builders<PostCollection>.Filter.And(
+            Builders<PostCollection>.Filter.Eq(i=>i.AuthorId, sub),
+            Builders<PostCollection>.Filter.Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id))));
+
+        var update = Builders<PostCollection>.Update
+            .Set(i => i.IsPublished, true);
+
+        var res = await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+
+        if (res.MatchedCount == 0)
+            throw new ArticleNotFoundException();
+
+        if (res.ModifiedCount == 0)
+            throw new Exception("Not Change");
+
+        _logger.LogInformation("user[{}] is publish article[{}]", id, sub);
+    }
+
     public Task Save(string id, string sub, CancellationToken cancellationToken = default)
     {
         try
@@ -206,6 +226,27 @@ public class PostRepository : IPostRepository
         {
             return Task.FromException(e);
         }
+    }
+
+    public async Task Unpublish(string id, string sub, CancellationToken cancellationToken = default)
+    {
+        var filter = Builders<PostCollection>.Filter.And(
+            Builders<PostCollection>.Filter.Eq(i=>i.AuthorId, sub),
+            Builders<PostCollection>.Filter.Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id))));
+
+        var update = Builders<PostCollection>.Update
+            .Set(i => i.IsPublished, false);
+
+        var res = await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+
+        if (res.MatchedCount == 0)
+            throw new ArticleNotFoundException();
+
+        if (res.ModifiedCount == 0)
+            throw new Exception("Not Change");
+
+        _logger.LogInformation("user[{}] is un-publish article[{}]", id, sub);
+
     }
 
     public Task UnSave(string id, string sub, CancellationToken cancellationToken = default)

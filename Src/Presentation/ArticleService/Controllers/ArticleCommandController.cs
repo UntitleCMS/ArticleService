@@ -1,4 +1,12 @@
-using Application.Features.Article.Command;
+using Application.Features.Article.Command.AddArticle;
+using Application.Features.Article.Command.DeleteArticle;
+using Application.Features.Article.Command.LikeArticle;
+using Application.Features.Article.Command.PublishArticle;
+using Application.Features.Article.Command.SavaArticle;
+using Application.Features.Article.Command.UnlikeArticle;
+using Application.Features.Article.Command.UnPublish;
+using Application.Features.Article.Command.UnSaveArticle;
+using Application.Features.Article.Command.UpdateArticle;
 using ArticleService.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -34,15 +42,24 @@ public class ArticleCommandController : SubControllerBase
     ) {
         command.ID = id;
         command.Sub = Sub;
-        //Console.WriteLine("#####################################\n\n\n\n\n");
-        //Console.WriteLine(command.ID);
-        //Console.WriteLine(command.Sub);
         return Ok(await _mediator.Send(command));
-        //return Ok(new { id });
     }
 
     // PATCH /articles/:id/publish
+    [HttpPatch("{id}/publish")]
+    public async Task<IActionResult> Publish([FromRoute]string id)
+    {
+        var res = await _mediator.Send(new PublishArticleCommand(id,Sub));
+        return Ok(res);
+    }
+
     // PATCH /articles/:id/unpublish
+    [HttpPatch("{id}/unpublish")]
+    public async Task<IActionResult> Unpublish([FromRoute]string id)
+    {
+        var res = await _mediator.Send(new UnpublishArticleCommand(id,Sub));
+        return Ok(res);
+    }
 
     // PATCH /articles/:id/like
     [HttpPatch("{id}/like")]

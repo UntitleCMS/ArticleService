@@ -12,4 +12,6 @@ public interface IPostRepository
     Task UnLike(string id, string sub, CancellationToken cancellationToken = default);
     Task Save(string id, string sub, CancellationToken cancellationToken = default);
     Task UnSave(string id, string sub, CancellationToken cancellationToken = default);
+    Task Publish(string id, string sub, CancellationToken cancellationToken = default);
+    Task Unpublish(string id, string sub, CancellationToken cancellationToken = default);
 }

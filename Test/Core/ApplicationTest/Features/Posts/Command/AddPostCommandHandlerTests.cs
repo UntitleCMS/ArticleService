@@ -1,5 +1,5 @@
 using Application.Common.Repositories;
-using Application.Features.Article.Command;
+using Application.Features.Article.Command.AddArticle;
 using Domain.Entites;
 using Moq;
 using System.ComponentModel.DataAnnotations;

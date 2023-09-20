@@ -1,4 +1,4 @@
-using Application.Features.Article.Query;
+using Application.Features.Article.Query.GetArticle;
 using ArticleService.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

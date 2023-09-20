@@ -1,15 +1,12 @@
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Common.models;
 using Application.Common.Repositories;
 using MediatR;
 
-namespace Application.Features.Article.Command;
+namespace Application.Features.Article.Command.DeleteArticle;
 
 using ResponseType = IResponseWrapper<string>;
-using CommandType = IRequest<IResponseWrapper<string>>;
 using HandlerType = IRequestHandler<DeleteArticleCommand, IResponseWrapper<string>>;
-
-public record DeleteArticleCommand(string articleId, string? sub = default) : CommandType;
 
 public class DeleteArticleCommandHandeler : HandlerType
 {

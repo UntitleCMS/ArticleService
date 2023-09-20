@@ -26,7 +26,7 @@ public static class ResponseWrapper
         };
     }
 
-    public static ResponseWrapper<T> Error<T>(Exception error, string? msg= default, T data=default)
+    public static ResponseWrapper<T> Error<T>(Exception error, string? msg= default, T? data=default)
     {
         return new ResponseWrapper<T>()
         {
@@ -37,22 +37,8 @@ public static class ResponseWrapper
         };
     }
 
-    public static ResponseWrapper<T> Error<T>(string error, string? msg= default, T data = default)
+    public static ResponseWrapper<T> Error<T>(string error, string? msg= default, T? data = default)
     {
         return Error(new Exception(error), msg, data);
-    }
-}
-
-file class Tmp
-{
-    private void hello()
-    {
-        var a = ResponseWrapper.Ok("hello");
-        var b = ResponseWrapper.Ok("hello", "success");
-        var c = ResponseWrapper.Error("error","hi","hello");
-        var d = ResponseWrapper.Error<string>("error","hi");
-        var x = ResponseWrapper.Error<string>("error");
-        var e = ResponseWrapper.Error(new Exception(""),"hi","hello");
-        var f = ResponseWrapper.Error<string>(new Exception(""),"hi");
     }
 }
