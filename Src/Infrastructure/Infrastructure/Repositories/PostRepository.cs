@@ -304,6 +304,15 @@ public class PostRepository : IPostRepository
         if (a.IsCompleted && a.Exception is not null)
             return Task.FromException(a.Exception);
 
+        Console.WriteLine(a.Result.MatchedCount);
+        Console.WriteLine(a.Result.ModifiedCount);
+
+        if (a.Result.MatchedCount == 0)
+            return Task.FromException(new ArticleNotFoundException());
+
+        if (a.Result.ModifiedCount == 0)
+            return Task.FromException(new Exception("No Change."));
+
         return Task.CompletedTask;
     }
 }
