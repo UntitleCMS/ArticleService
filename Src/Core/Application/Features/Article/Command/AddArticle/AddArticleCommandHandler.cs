@@ -27,7 +27,7 @@ public class AddArticleCommandHandler : AddPostCommandHandlerType
         }
 
         var post = request.PostEntity;
-        var a = postRepo.SavePost(ref post, cancellationToken);
+        var a = postRepo.Add(ref post, cancellationToken);
 
         if (a.IsCompletedSuccessfully)
         {

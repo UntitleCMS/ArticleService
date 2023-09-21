@@ -168,10 +168,12 @@ public class PostRepository : IPostRepository
 
     }
 
-    public Task SavePost(ref PostEntity post, CancellationToken cancellationToken = default)
+    public Task Add(ref PostEntity post, CancellationToken cancellationToken = default)
     {
         try
         {
+            if (post.AuthorId.IsNullOrEmpty())
+                throw new ArgumentException("Author Id Should Not Be Null or Empty.");
             var newPost = new PostCollection()
             {
                 Content = post.Content,
