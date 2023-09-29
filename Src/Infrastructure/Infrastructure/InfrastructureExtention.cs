@@ -1,5 +1,6 @@
 
 using Application.Common.Repositories;
+using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,8 @@ public static class InfrastructureExtention
             settings.LoggingSettings = new LoggingSettings(sp.GetService<ILoggerFactory>());
             return new MongoClient(settings);
         });
+
+        services.AddSingleton<DataContext>();
 
         services.AddScoped<IPostRepository, PostRepository>();
         return services;

@@ -3,6 +3,7 @@ using Application.Common.models;
 using Application.Common.Repositories;
 using Domain.Entites;
 using Domain.Exceptions;
+using Infrastructure.Persistence;
 using Infrastructure.Persistence.Collections;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -14,15 +15,11 @@ namespace Infrastructure.Repositories;
 public class PostRepository : IPostRepository
 {
     private readonly ILogger<PostRepository> _logger;
-    private readonly IMongoClient _mongo;
-    private readonly IMongoDatabase _db;
     private readonly IMongoCollection<PostCollection> _collection;
 
-    public PostRepository(IMongoClient mongo, ILogger<PostRepository> logger)
+    public PostRepository(DataContext mongo, ILogger<PostRepository> logger)
     {
-        _mongo = mongo;
-        _db = _mongo.GetDatabase("article");
-        _collection = _db.GetCollection<PostCollection>("posts");
+        _collection = mongo.Collection<PostCollection>();
         _logger = logger;
     }
 

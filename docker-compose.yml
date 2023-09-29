@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  articleservice:
+    image: ${DOCKER_REGISTRY-}articleservice
+    build:
+      context: .
+      dockerfile: Src/Presentation/ArticleService/Dockerfile
+    environment:
+      DB_CONNECTION_STRING: mongodb://mongo1:50001/?replicaSet=my-mongo-set
+
+  mongo1:
+    image: mongo
+    volumes:
+      - ./mongo_database/data/m1:/data/db
+      - ./mongo_database/config/m1:/data/configdb
+      - ./mongo_database/log/m1:/data/db/log
+      - ./mongo_database/scripts/:/scripts
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      IS_PRIMARY: true
+    ports:
+      - 50001:50001
+    command: bash /scripts/endpoint.sh
+
