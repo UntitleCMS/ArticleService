@@ -330,7 +330,9 @@ public class PostRepository : IPostRepository
         {
             var res = GetPostEntityQueryable(Sub)
                 .Where(i => Of == null || i.AuthorId == Of)
+                .OrderByDescending(i=>i.CreatedAt)
                 .Take(Take + 1)
+                //.OrderBy(i=>i.CreatedAt)
                 .ToList();
 
             data.HasNext = false;
@@ -349,6 +351,7 @@ public class PostRepository : IPostRepository
             var res = GetPostEntityQueryable(Sub)
                 .Where(i => Of == null || i.AuthorId == Of)
                 .Where(i=>i.CreatedAt < docref.Timestamp)
+                .OrderByDescending (i=>i.CreatedAt)
                 .Take(Take + 1)
                 .ToList();
 
