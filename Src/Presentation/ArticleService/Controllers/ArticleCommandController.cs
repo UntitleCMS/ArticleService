@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArticleService.Controllers;
 
-[Route("api/post/v2/articles")]
+[Route("articles")]
 [ApiController]
 public class ArticleCommandController : SubControllerBase
 {
