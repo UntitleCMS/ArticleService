@@ -22,4 +22,7 @@ public class ArticlesQueryDto
     [FromQuery(Name ="of")]
     [RegularExpression("""^[A-Za-z0-9_\-\+\/]{22,24}$""", ErrorMessage ="For base64 id")]
     public string? Filter { get; set; }
+
+    [RegularExpression("""[^\s\n\t]+""", ErrorMessage ="Tag sould not be space")]
+    public string[]? Tags { get; set; }
 }

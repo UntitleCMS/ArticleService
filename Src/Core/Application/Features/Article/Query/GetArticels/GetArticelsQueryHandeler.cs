@@ -24,10 +24,10 @@ public class GetArticelsQueryHandeler : RequestPipeHandelerBase<GetArticelsQuery
     {
         var size = request.Take == 0 ? DefualSize : request.Take;
         var res = request.Privot is null
-            ? await _repo.Find(Take: size, Of: request.Filter, Sub: request.Sub)
+            ? await _repo.Find(Take: size, Of: request.Filter, Tags: request.Tags, Sub: request.Sub)
             : request.Privot.First() == '<'
-            ? await _repo.Find(Take: size, Befor: request.Privot[1..], Of: request.Filter, Sub: request.Sub)
-            : await _repo.Find(Take: size, After: request.Privot[1..], Of: request.Filter, Sub: request.Sub);
+            ? await _repo.Find(Take: size, Befor: request.Privot[1..], Of: request.Filter, Tags:request.Tags, Sub: request.Sub)
+            : await _repo.Find(Take: size, After: request.Privot[1..], Of: request.Filter, Tags: request.Tags, Sub: request.Sub);
 
         // maping model
         var col = res.Collections.Select(article=>new GetArticelsQueryDto()

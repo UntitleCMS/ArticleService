@@ -10,6 +10,7 @@ public static class ArticlesQueryMapper
         Sub = dto.Sub,
         Filter = dto.Filter,
         Privot = dto.Privot,
-        Take = dto.Take
+        Take = dto.Take,
+        Tags = dto.Tags
     };
 }

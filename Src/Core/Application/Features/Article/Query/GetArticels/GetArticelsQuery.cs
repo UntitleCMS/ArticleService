@@ -16,4 +16,6 @@ public class GetArticelsQuery : IRequestWraped<ResponseType>
 
     [RegularExpression("""^[A-Za-z0-9_\-\+\/]{22,24}$""", ErrorMessage = "For base64 id")]
     public string? Filter { get; set; }
+
+    public string[] Tags { get; set; }
 }

@@ -15,5 +15,5 @@ public interface IPostRepository
     Task UnSave(string id, string sub, CancellationToken cancellationToken = default);
     Task Publish(string id, string sub, CancellationToken cancellationToken = default);
     Task Unpublish(string id, string sub, CancellationToken cancellationToken = default);
-    Task<IResponsePageable<PostEntity>> Find(int Take, string? Befor=default, string? After=default, string? Of=default, string? Sub=default);
+    Task<IResponsePageable<PostEntity>> Find(int Take, string? Befor=default, string? After=default, string? Of=default, string[]? Tags=default, string? Sub=default);
 }

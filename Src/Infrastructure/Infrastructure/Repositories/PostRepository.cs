@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Infrastructure.Repositories;
 
@@ -315,7 +316,15 @@ public class PostRepository : IPostRepository
         return Task.CompletedTask;
     }
 
-    public async Task<IResponsePageable<PostEntity>> Find(int Take, string? Before = default, string? After = default, string? Of = default, string? Sub = default)
+    public async Task<IResponsePageable<PostEntity>> Find
+        (
+            int Take,
+            string? Before = default,
+            string? After = default,
+            string? Of = default,
+            string[]? Tags = default,
+            string? Sub = default
+        )
     {
         if (After is not null && Before is not null)
         {
@@ -329,8 +338,9 @@ public class PostRepository : IPostRepository
         if (Before is null && After is null)
         {
             var res = GetPostEntityQueryable(Sub)
+                .Where(i=> Tags == null || i.Tags.Any(x=>Tags.Contains(x)))
                 .Where(i => Of == null || i.AuthorId == Of)
-                .OrderByDescending(i=>i.CreatedAt)
+                .OrderByDescending(i => i.CreatedAt)
                 .Take(Take + 1)
                 //.OrderBy(i=>i.CreatedAt)
                 .ToList();
@@ -350,13 +360,13 @@ public class PostRepository : IPostRepository
 
             var res = GetPostEntityQueryable(Sub)
                 .Where(i => Of == null || i.AuthorId == Of)
-                .Where(i=>i.CreatedAt < docref.Timestamp)
-                .OrderByDescending (i=>i.CreatedAt)
+                .Where(i => i.CreatedAt < docref.Timestamp)
+                .OrderByDescending(i => i.CreatedAt)
                 .Take(Take + 1)
                 .ToList();
 
             var hasNewer = GetPostEntityQueryable()
-                .Where(i=>i.CreatedAt >= docref.Timestamp)
+                .Where(i => i.CreatedAt >= docref.Timestamp)
                 .Take(1)
                 .Count();
 
@@ -375,12 +385,12 @@ public class PostRepository : IPostRepository
                 .First();
             var res = GetPostEntityQueryable(Sub)
                 .Where(i => Of == null || i.AuthorId == Of)
-                .Where(i=>i.CreatedAt > docref.Timestamp)
+                .Where(i => i.CreatedAt > docref.Timestamp)
                 .Take(Take + 1)
                 .ToList();
 
             var hasBefore = GetPostEntityQueryable(Sub)
-                .Where(i=>i.CreatedAt <= docref.Timestamp)
+                .Where(i => i.CreatedAt <= docref.Timestamp)
                 .Take(1)
                 .Count();
 
@@ -415,8 +425,8 @@ public class PostRepository : IPostRepository
                CreatedAt = article.Timestamp,
                LastUpdated = article.LastUpdate,
 
-               SavedBy = article.SavedBy.Where(i=>i==Sub).ToList(),
-               LikedBy = article.LikedBy.Where(i=>i==Sub).ToList(),
+               SavedBy = article.SavedBy.Where(i => i == Sub).ToList(),
+               LikedBy = article.LikedBy.Where(i => i == Sub).ToList(),
                LikedCount = article.LikedBy.Count()
            });
         return res;
