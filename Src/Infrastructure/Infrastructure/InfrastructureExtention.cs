@@ -24,6 +24,7 @@ public static class InfrastructureExtention
         services.AddSingleton<DataContext>();
 
         services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
         return services;
     }
 }
