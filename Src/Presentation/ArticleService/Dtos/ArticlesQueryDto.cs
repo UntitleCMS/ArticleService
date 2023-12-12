@@ -13,7 +13,7 @@ public class ArticlesQueryDto
     public string? Sub { get; set; }
 
     [FromQuery(Name = "take")]
-    public int Take { set; get; }
+    public int Take { set; get; } = 10;
 
     [FromQuery(Name ="from")]
     [RegularExpression("""^[<>][A-Za-z0-9_\-\+\/]{22,24}$""", ErrorMessage = "Start with '<' for get befor, '>' for after; example '<C95KV0xhcUuD1s5HHWM4uA' or '>C95KV0xhcUuD1s5HHWM4uA'")]
@@ -24,5 +24,9 @@ public class ArticlesQueryDto
     public string? Filter { get; set; }
 
     [RegularExpression("""[^\s\n\t]+""", ErrorMessage ="Tag sould not be space")]
+    [FromQuery(Name ="tag")]
     public string[]? Tags { get; set; }
+
+    [FromQuery(Name ="bookmarked")]
+    public bool IsBookmared { get; set; } = false;
 }
