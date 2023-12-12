@@ -13,7 +13,7 @@ public class DataContext
             .FromConnectionString("mongodb://mongo1:50001/?replicaSet=my-mongo-set");
 
         mongoClient = new MongoClient(settings);
-        database = mongoClient.GetDatabase("post_service");
+        database = mongoClient.GetDatabase("articles");
     }
 
     public Task<IClientSessionHandle> Session(CancellationToken cancellation = default)

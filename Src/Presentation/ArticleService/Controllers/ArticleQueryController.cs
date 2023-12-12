@@ -1,11 +1,14 @@
 using Application.Features.Article.Query.GetArticle;
 using ArticleService.Common;
+using ArticleService.Common.Mapper;
+using ArticleService.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace ArticleService.Controllers;
 
-[Route("api/post/v2/articles")]
+[Route("articles")]
 [ApiController]
 public class ArticleQueryController : SubControllerBase
 {
@@ -17,6 +20,12 @@ public class ArticleQueryController : SubControllerBase
     }
 
     // GET /articles
+    [HttpGet]
+    public async Task<IActionResult> GetArticles(ArticlesQueryDto a)
+    {
+        Console.WriteLine(a.ToJson(new() { Indent = true}));
+        return Ok(await _mediator.Send(a.GetQuery()));
+    }
 
     // GET /articles/:id
     [HttpGet("{id}")]

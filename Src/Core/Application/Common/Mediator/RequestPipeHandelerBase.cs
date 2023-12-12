@@ -8,16 +8,10 @@ public abstract class RequestPipeHandelerBase<TReq, TRes> : IRequestHandler<TReq
     where TReq : IRequestWraped<TRes>
 {
     protected abstract string DefaultErrorMessage { get; }
+
     public async Task<IResponseWrapper<TRes>> Handle(TReq request, CancellationToken cancellationToken)
     {
-        try
-        {
-            return await Execute(request);
-        }
-        catch (Exception ex)
-        {
-            return Error(ex);
-        }
+        return await Execute(request);
     }
 
     protected abstract Task<IResponseWrapper<TRes>> Execute(TReq request);

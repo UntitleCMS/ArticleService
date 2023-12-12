@@ -1,26 +1,26 @@
+using Application.Common.Interfaces;
+using Application.Common.models;
 using Application.Common.Repositories;
 using Domain.Entites;
 using Domain.Exceptions;
+using Infrastructure.Persistence;
 using Infrastructure.Persistence.Collections;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Infrastructure.Repositories;
 
 public class PostRepository : IPostRepository
 {
     private readonly ILogger<PostRepository> _logger;
-    private readonly IMongoClient _mongo;
-    private readonly IMongoDatabase _db;
     private readonly IMongoCollection<PostCollection> _collection;
 
-    public PostRepository(IMongoClient mongo, ILogger<PostRepository> logger)
+    public PostRepository(DataContext mongo, ILogger<PostRepository> logger)
     {
-        _mongo = mongo;
-        _db = _mongo.GetDatabase("article");
-        _collection = _db.GetCollection<PostCollection>("posts");
+        _collection = mongo.Collection<PostCollection>();
         _logger = logger;
     }
 
@@ -122,7 +122,7 @@ public class PostRepository : IPostRepository
     public async Task Publish(string id, string sub, CancellationToken cancellationToken = default)
     {
         var filter = Builders<PostCollection>.Filter.And(
-            Builders<PostCollection>.Filter.Eq(i=>i.AuthorId, sub),
+            Builders<PostCollection>.Filter.Eq(i => i.AuthorId, sub),
             Builders<PostCollection>.Filter.Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id))));
 
         var update = Builders<PostCollection>.Update
@@ -168,10 +168,12 @@ public class PostRepository : IPostRepository
 
     }
 
-    public Task SavePost(ref PostEntity post, CancellationToken cancellationToken = default)
+    public Task Add(ref PostEntity post, CancellationToken cancellationToken = default)
     {
         try
         {
+            if (post.AuthorId.IsNullOrEmpty())
+                throw new ArgumentException("Author Id Should Not Be Null or Empty.");
             var newPost = new PostCollection()
             {
                 Content = post.Content,
@@ -231,7 +233,7 @@ public class PostRepository : IPostRepository
     public async Task Unpublish(string id, string sub, CancellationToken cancellationToken = default)
     {
         var filter = Builders<PostCollection>.Filter.And(
-            Builders<PostCollection>.Filter.Eq(i=>i.AuthorId, sub),
+            Builders<PostCollection>.Filter.Eq(i => i.AuthorId, sub),
             Builders<PostCollection>.Filter.Eq(i => i.ID, new Guid(Base64UrlEncoder.DecodeBytes(id))));
 
         var update = Builders<PostCollection>.Update
@@ -302,6 +304,131 @@ public class PostRepository : IPostRepository
         if (a.IsCompleted && a.Exception is not null)
             return Task.FromException(a.Exception);
 
+        Console.WriteLine(a.Result.MatchedCount);
+        Console.WriteLine(a.Result.ModifiedCount);
+
+        if (a.Result.MatchedCount == 0)
+            return Task.FromException(new ArticleNotFoundException());
+
+        if (a.Result.ModifiedCount == 0)
+            return Task.FromException(new Exception("No Change."));
+
         return Task.CompletedTask;
+    }
+
+    public async Task<IResponsePageable<PostEntity>> Find
+        (
+            int Take,
+            string? Before = default,
+            string? After = default,
+            string? Of = default,
+            string[]? Tags = default,
+            string? Sub = default
+        )
+    {
+        if (After is not null && Before is not null)
+        {
+            throw new Exception("Befor and After should not have value in the same time.");
+        }
+
+        Pageable<PostEntity> data = new();
+        var countAll = _collection.EstimatedDocumentCount();
+
+        // Default
+        if (Before is null && After is null)
+        {
+            var res = GetPostEntityQueryable(Sub)
+                .Where(i=> Tags == null || i.Tags.Any(x=>Tags.Contains(x)))
+                .Where(i => Of == null || i.AuthorId == Of)
+                .OrderByDescending(i => i.CreatedAt)
+                .Take(Take + 1)
+                //.OrderBy(i=>i.CreatedAt)
+                .ToList();
+
+            data.HasNext = false;
+            data.HasPrevious = res.Count > Take;
+            data.Collections = res.Take(Take);
+            data.CountAll = countAll;
+        }
+
+        // Before
+        if (Before is not null && After is null)
+        {
+            var docref = _collection
+                .Find(i => i.ID == new Guid(Base64UrlEncoder.DecodeBytes(Before)))
+                .First();
+
+            var res = GetPostEntityQueryable(Sub)
+                .Where(i => Of == null || i.AuthorId == Of)
+                .Where(i => i.CreatedAt < docref.Timestamp)
+                .OrderByDescending(i => i.CreatedAt)
+                .Take(Take + 1)
+                .ToList();
+
+            var hasNewer = GetPostEntityQueryable()
+                .Where(i => i.CreatedAt >= docref.Timestamp)
+                .Take(1)
+                .Count();
+
+            data.HasNext = hasNewer == 1;
+            data.HasPrevious = res.Count > Take;
+            data.Collections = res.Take(Take);
+            data.Pivot = Before;
+            data.CountAll = countAll;
+        }
+
+        // After 
+        if (Before is null && After is not null)
+        {
+            var docref = _collection
+                .Find(i => i.ID == new Guid(Base64UrlEncoder.DecodeBytes(After)))
+                .First();
+            var res = GetPostEntityQueryable(Sub)
+                .Where(i => Of == null || i.AuthorId == Of)
+                .Where(i => i.CreatedAt > docref.Timestamp)
+                .Take(Take + 1)
+                .ToList();
+
+            var hasBefore = GetPostEntityQueryable(Sub)
+                .Where(i => i.CreatedAt <= docref.Timestamp)
+                .Take(1)
+                .Count();
+
+            data.HasPrevious = hasBefore == 1;
+            data.HasNext = res.Count > Take;
+            data.Collections = res.Take(Take);
+            data.Pivot = After;
+            data.CountAll = countAll;
+        }
+
+        //_logger.LogInformation(">> {}", data.ToJson(new() { Indent = true }));
+
+        return data;
+    }
+    private IQueryable<PostEntity> GetPostEntityQueryable
+        (string? Sub = default)
+    {
+        var res = _collection.AsQueryable()
+            .OrderBy(i => i.Timestamp)
+           .Select(article => new PostEntity()
+           {
+               ID = article.ID,
+               AuthorId = article.AuthorId,
+
+               Title = article.Title,
+               Cover = article.Cover,
+               Content = article.Content,
+               ContentPreviews = article.ContentPreviews,
+               Tags = article.Tags,
+
+               IsPublished = article.IsPublished,
+               CreatedAt = article.Timestamp,
+               LastUpdated = article.LastUpdate,
+
+               SavedBy = article.SavedBy.Where(i => i == Sub).ToList(),
+               LikedBy = article.LikedBy.Where(i => i == Sub).ToList(),
+               LikedCount = article.LikedBy.Count()
+           });
+        return res;
     }
 }

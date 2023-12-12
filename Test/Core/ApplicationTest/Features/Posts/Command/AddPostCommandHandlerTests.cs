@@ -16,7 +16,7 @@ public class AddPostCommandHandlerTests
         mockID = Guid.NewGuid();
 
         var mockPostRepo = new Mock<IPostRepository>();
-        mockPostRepo.Setup(m => m.SavePost(ref It.Ref<PostEntity>.IsAny))
+        mockPostRepo.Setup(m => m.Add(ref It.Ref<PostEntity>.IsAny))
             .Callback((ref PostEntity post) => { post.ID = mockID; })
             .Returns(Task.CompletedTask);
 
