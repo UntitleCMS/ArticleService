@@ -2,10 +2,10 @@ using Application.Common.Mediator;
 using Application.Common.models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Features.Article.Query.GetArticels;
+namespace Application.Features.Bookmark.Query;
 
-using ResponseType = Pageable<GetArticelsQueryDto>;
-public class GetArticelsQuery : IRequestWraped<ResponseType>
+using ResponseType = Pageable<GetMyBookmarksQueryDto>;
+public class GetMyBookmarksQuery : IRequestWraped<ResponseType>
 {
     public string? Sub { get; set; }
 
@@ -19,4 +19,5 @@ public class GetArticelsQuery : IRequestWraped<ResponseType>
 
     public string[]? Tags { get; set; }
     public bool IsBookmarked { get; set; } = false;
+
 }
