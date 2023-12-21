@@ -4,6 +4,7 @@ using ArticleService.Common.Mapper;
 using ArticleService.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 
 namespace ArticleService.Controllers;
@@ -24,6 +25,8 @@ public class ArticleQueryController : SubControllerBase
     public async Task<IActionResult> GetArticles(ArticlesQueryDto a)
     {
         Console.WriteLine(a.ToJson(new() { Indent = true}));
+        if (!a.SerchText.IsNullOrEmpty())
+            return Ok(await _mediator.Send(a.GetSerchArticleQuery()));
         return Ok(await _mediator.Send(a.GetQuery()));
     }
 
