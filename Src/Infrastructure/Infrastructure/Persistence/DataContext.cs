@@ -1,4 +1,6 @@
 using MongoDB.Driver;
+using System.Security.Authentication;
+using System.Text.RegularExpressions;
 
 namespace Infrastructure.Persistence;
 
@@ -7,10 +9,13 @@ public class DataContext
     private readonly IMongoClient mongoClient;
     private readonly IMongoDatabase database;
 
-    public DataContext()
+    public DataContext(string connectionString)
     {
         var settings = MongoClientSettings
-            .FromConnectionString("mongodb://mongo1:50001/?replicaSet=my-mongo-set");
+            .FromUrl(new MongoUrl(connectionString));
+
+        if (connectionString.Contains("ssl=true",StringComparison.OrdinalIgnoreCase))
+            settings.SslSettings = new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
 
         mongoClient = new MongoClient(settings);
         database = mongoClient.GetDatabase("articles");
