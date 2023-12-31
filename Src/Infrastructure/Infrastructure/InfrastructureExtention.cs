@@ -31,6 +31,7 @@ public static class InfrastructureExtention
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IArticlesPageableRepository, ArticlesPageableRepository>();
+        services.AddScoped<IArticlesNameRepository, ArticlesNameRepository>();
         return services;
     }
 }

@@ -1,4 +1,5 @@
 using Application.Features.Article.Query.GetArticle;
+using Application.Features.Article.Query.GetTopArticles;
 using ArticleService.Common;
 using ArticleService.Common.Mapper;
 using ArticleService.Dtos;
@@ -38,4 +39,13 @@ public class ArticleQueryController : SubControllerBase
         var query = new GetArticleQuery(id, Sub);
         return Ok(await _mediator.Send(query));
     }
+
+    [HttpGet("top/{n}")]
+    public async Task<IActionResult> GetTopArticlesNames(
+        [FromRoute]int n
+    ){
+        var query = new GetTopArticelsQuery(n);
+        return Ok(await _mediator.Send(query));
+    }
+
 }
