@@ -27,6 +27,7 @@ public class ArticlesPageableRepository : IArticlesPageableRepository
         var resx = GetPostEntityQueryable(Sub);
 
         var datasize = ApplyFilter(ref resx, fillter, Sub);
+        ApplySerch(ref resx, fillter);
         (bool pre, bool post) = ApplyPrivotFilter(ref resx, fillter);
 
         data.HasPrevious = pre;
@@ -68,6 +69,14 @@ public class ArticlesPageableRepository : IArticlesPageableRepository
         return res;
     }
 
+    private void ApplySerch(ref IQueryable<PostEntity> q, in ArticleFilter fillter)
+    {
+        if (!fillter.SerchText.IsNullOrEmpty())
+        {
+            var txt = fillter.SerchText!;
+            q = q.Where( i => i.Title.ToUpper().Contains(txt.ToUpper()));
+        }
+    }
     private int ApplyFilter(ref IQueryable<PostEntity> q, in ArticleFilter fillter, string? sub = default)
     {
         if (fillter.Of is not null)

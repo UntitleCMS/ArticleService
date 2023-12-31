@@ -27,6 +27,9 @@ public class ArticlesQueryDto
     [FromQuery(Name ="tag")]
     public string[]? Tags { get; set; }
 
+    [FromQuery(Name ="serch-text")]
+    public string? SerchText { get; set; }
+
     [FromQuery(Name ="bookmarked")]
     public bool IsBookmared { get; set; } = false;
 }

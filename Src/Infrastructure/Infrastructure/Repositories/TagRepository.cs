@@ -3,6 +3,8 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.Collections;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace Infrastructure.Repositories;
 
@@ -27,6 +29,23 @@ public class TagRepository : ITagRepository
             .Take(n);
 
         Console.WriteLine(n);
+        Console.WriteLine(x.ToJson(new() { Indent = true }));
+
+        return x.ToList();
+    }
+
+    public async Task<IList<string>> Serch(string tag, int n = 10)
+    {
+        var x = _posts.Aggregate()
+            .Unwind(i=>i.Tags)
+            .Group(new BsonDocument("_id", "$Tags"))
+            .Match(new BsonDocument("_id", new Regex(tag, RegexOptions.IgnoreCase)))
+            .Limit(n)
+            .ToList()
+            .Select(i => i["_id"].ToString());
+
+        Console.WriteLine(n);
+        Console.WriteLine(x.Count());
         Console.WriteLine(x.ToJson(new() { Indent = true }));
 
         return x.ToList();

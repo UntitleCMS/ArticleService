@@ -10,6 +10,7 @@ public class ArticleFilter
     public string? After { get; set; }
     public string? Of { get; set; }
     public string[]? Tags { get; set; }
+    public string? SerchText { get; set; }
     public bool IsBookmarked { get; set; } = false;
 
     public ArticleFilter(int take = 10, string? before = null, string? after = null, string? of = null, string[]? tags = null, bool isBookmarked = false)
