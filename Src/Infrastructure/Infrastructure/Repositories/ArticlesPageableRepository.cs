@@ -74,7 +74,7 @@ public class ArticlesPageableRepository : IArticlesPageableRepository
         if (!fillter.SerchText.IsNullOrEmpty())
         {
             var txt = fillter.SerchText!;
-            q = q.Where( i => i.Title.Contains(txt));
+            q = q.Where( i => i.Title.ToUpper().Contains(txt.ToUpper()));
         }
     }
     private int ApplyFilter(ref IQueryable<PostEntity> q, in ArticleFilter fillter, string? sub = default)
