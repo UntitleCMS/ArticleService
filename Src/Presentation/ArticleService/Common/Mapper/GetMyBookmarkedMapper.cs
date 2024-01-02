@@ -13,7 +13,7 @@ public static class GetMyBookmarkedMapper
         Privot = dto.Privot,
         Take = dto.Take,
         Tags = dto.Tags,
-        IsBookmarked = dto.IsBookmared
+        IsBookmarked = true
     };
 }
 

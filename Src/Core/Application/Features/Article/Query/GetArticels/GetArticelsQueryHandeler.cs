@@ -68,6 +68,7 @@ public class GetArticelsQueryHandeler : RequestPipeHandelerBase<GetArticelsQuery
         ArticleFilter filler = new()
         {
             IsBookmarked = request.IsBookmarked,
+            IsPublish = request.IsPublish,
             Of = request.Filter,
             Tags = request.Tags,
             Take = request.Take

@@ -31,5 +31,5 @@ public class ArticlesQueryDto
     public string? SerchText { get; set; }
 
     [FromQuery(Name ="bookmarked")]
-    public bool IsBookmared { get; set; } = false;
+    public bool? IsBookmared { get; set; } = false;
 }
