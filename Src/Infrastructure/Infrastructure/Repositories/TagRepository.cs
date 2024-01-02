@@ -22,6 +22,7 @@ public class TagRepository : ITagRepository
     public async Task<IList<KeyValuePair<string, int>>> GetTop(int n = 10)
     {
         var x = _posts.AsQueryable()
+            .Where(i=>i.IsPublished == true)
             .SelectMany(i => i.Tags)
             .GroupBy(i => i)
             .Select(i => new KeyValuePair<string, int>(i.Key, i.Count()))
@@ -37,6 +38,7 @@ public class TagRepository : ITagRepository
     public async Task<IList<string>> Serch(string tag, int n = 10)
     {
         var x = _posts.Aggregate()
+            .Match(i=>i.IsPublished == true)
             .Unwind(i=>i.Tags)
             .Group(new BsonDocument("_id", "$Tags"))
             .Match(new BsonDocument("_id", new Regex(tag, RegexOptions.IgnoreCase)))
