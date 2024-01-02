@@ -96,6 +96,16 @@ public class ArticlesPageableRepository : IArticlesPageableRepository
             q = q.Where(i => sub != null && i.SavedBy.Contains(sub));
         }
 
+        if (fillter.IsPublish)
+        {
+            q = q.Where(i =>  i.IsPublished == true);
+        }
+        else
+        {
+            q = q.Where(i => i.IsPublished == false && i.AuthorId == sub);
+        }
+
+
         return q.Count();
     }
 
