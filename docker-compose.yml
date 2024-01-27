@@ -8,6 +8,7 @@ services:
       dockerfile: Src/Presentation/ArticleService/Dockerfile
     environment:
       DB_CONNECTION_STRING: mongodb://mongo1:50001/?replicaSet=my-mongo-set
+      MQ_HOST: rabit-mq
 
   mongo1:
     image: mongo

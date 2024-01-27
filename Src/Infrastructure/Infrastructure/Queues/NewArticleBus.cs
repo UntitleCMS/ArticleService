@@ -14,7 +14,7 @@ public class NewArticleBus : IDisposable, INewArticleQueue
     {
         Console.WriteLine("Connect to queue.");
         // todo: dynamic hostname with env
-        var factory = new ConnectionFactory { HostName = "rabit-mq" };
+        var factory = new ConnectionFactory { HostName = Environment.GetEnvironmentVariable("MQ_HOST") ?? "localhost"};
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
