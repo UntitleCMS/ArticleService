@@ -23,3 +23,9 @@ services:
       - 50001:50001
     command: bash /scripts/endpoint.sh
 
+  rabit-mq:
+    hostname: rabit-mq
+    image: rabbitmq:3-management
+    ports:
+      - 15672:15672
+      - 5672:5672
