@@ -23,7 +23,7 @@ public class NewArticleEventHandler : RequestPipeHandelerBase<NewArticleEvent, s
         {
             PostID = Base64UrlEncoder.Encode(request.post.ID.ToByteArray()),
             AuthorID = request.post.AuthorId,
-            request.post.CreatedAt
+            CreatedAt = request.post.CreatedAt
         };
         queue.Publish(data);
 

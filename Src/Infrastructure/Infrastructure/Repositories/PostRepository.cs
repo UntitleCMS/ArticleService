@@ -192,6 +192,8 @@ public class PostRepository : IPostRepository
                 .Wait(cancellationToken);
 
             post.ID = newPost.ID;
+            post.LastUpdated = newPost.LastUpdate;
+            post.CreatedAt = newPost.Timestamp;
 
         }
         catch (Exception ex)
