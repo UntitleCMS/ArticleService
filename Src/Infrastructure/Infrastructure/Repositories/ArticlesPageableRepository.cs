@@ -4,19 +4,32 @@ using Application.Common.Repositories;
 using Domain.Entites;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Collections;
+using Infrastructure.Queues;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Driver;
+using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
+
+class Tmp
+{
+    public string authorId { get; set; } = string.Empty;
+    public string articleId { get; set; } = string.Empty;
+    public DateTime? cratedAt { get; set; }
+}
 
 public class ArticlesPageableRepository : IArticlesPageableRepository
 {
     private DataContext _context;
+    private FollowingArticlesRequest _followingArticlesRequest;
 
-    public ArticlesPageableRepository(DataContext context)
+    public ArticlesPageableRepository(DataContext context, FollowingArticlesRequest followingArticlesRequest)
     {
         _context = context;
+        _followingArticlesRequest = followingArticlesRequest;
     }
 
     public async Task<IResponsePageable<PostEntity>> Find(ArticleFilter fillter, string? Sub = null)
@@ -24,9 +37,15 @@ public class ArticlesPageableRepository : IArticlesPageableRepository
         Console.WriteLine($"filter >> {fillter.ToJson(new() { Indent = true })}");
 
         var data = new Pageable<PostEntity>();
-        var resx = GetPostEntityQueryable(Sub);
+
+
+        var resx = (Sub is not null && fillter.OnlyFollowing)
+            ? GetPostEntityQueryableOnlyFollowing(fillter, Sub)
+            : GetPostEntityQueryable(Sub);
+
 
         var datasize = ApplyFilter(ref resx, fillter, Sub);
+        //Console.WriteLine(resx.ToArray().ToJson(new() { Indent = true })) ;
         ApplySerch(ref resx, fillter);
         (bool pre, bool post) = ApplyPrivotFilter(ref resx, fillter);
 
@@ -41,6 +60,55 @@ public class ArticlesPageableRepository : IArticlesPageableRepository
         return data;
     }
 
+    private IQueryable<PostEntity> GetPostEntityQueryableOnlyFollowing(ArticleFilter filter, string? Sub = default)
+    {
+        var aa = _followingArticlesRequest.PublishAsync(new
+        {
+            Sub,
+            filter.Take,
+            filter.Before,
+            filter.After,
+        });
+
+        aa.Wait();
+
+        if (aa.IsFaulted)
+            throw aa.Exception!;
+
+        var ob = JsonSerializer.Deserialize<Tmp[]>(aa.Result)
+            ?.Select(i=>new Guid(Base64UrlEncoder.DecodeBytes(i.articleId)))
+            .ToArray();
+
+        Console.WriteLine(ob.ToJson(new() { Indent=true })) ;
+
+        var res = _context.Collection<PostCollection>()
+                   .AsQueryable()
+                   .Where(i=>ob.Contains(i.ID))
+                   .OrderByDescending(i => i.Timestamp)
+                   .Select(article => new PostEntity()
+                   {
+                       ID = article.ID,
+                       AuthorId = article.AuthorId,
+
+                       Title = article.Title,
+                       Cover = article.Cover,
+                       Content = article.Content,
+                       ContentPreviews = article.ContentPreviews,
+                       Tags = article.Tags,
+
+                       IsPublished = article.IsPublished,
+                       CreatedAt = article.Timestamp,
+                       LastUpdated = article.LastUpdate,
+
+                       SavedBy = article.SavedBy.Where(i => i == Sub).ToList(),
+                       LikedBy = article.LikedBy.Where(i => i == Sub).ToList(),
+                       LikedCount = article.LikedBy.Count()
+                   });
+
+
+        return res;
+
+    }
     private IQueryable<PostEntity> GetPostEntityQueryable(string? Sub = default)
     {
         var res = _context.Collection<PostCollection>()
@@ -156,7 +224,7 @@ public class ArticlesPageableRepository : IArticlesPageableRepository
         post = fillter.After is not null && next;
         post = post || (fillter.Before is not null && back);
 
-        return (pre, post); 
+        return (pre, post);
     }
 
 }

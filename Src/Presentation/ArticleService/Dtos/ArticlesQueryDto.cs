@@ -32,4 +32,7 @@ public class ArticlesQueryDto
 
     [FromQuery(Name ="bookmarked")]
     public bool? IsBookmared { get; set; } = false;
+
+    [FromQuery(Name ="following")]
+    public bool OnlyFollowing { get; set; } = false;
 }

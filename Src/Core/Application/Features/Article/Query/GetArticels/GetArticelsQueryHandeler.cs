@@ -71,7 +71,8 @@ public class GetArticelsQueryHandeler : RequestPipeHandelerBase<GetArticelsQuery
             IsPublish = request.IsPublish,
             Of = request.Filter,
             Tags = request.Tags,
-            Take = request.Take
+            Take = request.Take,
+            OnlyFollowing = request.OnlyFollowing
         };
 
         if (request.Privot?.StartsWith("<") ?? false)

@@ -20,4 +20,5 @@ public class GetArticelsQuery : IRequestWraped<ResponseType>
     public string[]? Tags { get; set; }
     public bool IsBookmarked { get; set; } = false;
     public bool IsPublish { get; set; } = true;
+    public bool OnlyFollowing { get; set; } = false;
 }

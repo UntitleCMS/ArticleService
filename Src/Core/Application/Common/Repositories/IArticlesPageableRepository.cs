@@ -13,8 +13,9 @@ public class ArticleFilter
     public string? SerchText { get; set; }
     public bool IsBookmarked { get; set; } = false;
     public bool IsPublish { get; set; } = true;
+    public bool OnlyFollowing { get; set; } = false;
 
-    public ArticleFilter(int take = 10, string? before = null, string? after = null, string? of = null, string[]? tags = null, bool isBookmarked = false, bool isPublish = true)
+    public ArticleFilter(int take = 10, string? before = null, string? after = null, string? of = null, string[]? tags = null, bool isBookmarked = false, bool isPublish = true, bool onlyFollowing=false)
     {
         Take = take;
         Before = before;
@@ -23,6 +24,7 @@ public class ArticleFilter
         Tags = tags;
         IsBookmarked = isBookmarked;
         IsPublish = isPublish;
+        OnlyFollowing = onlyFollowing;
     }
 }
 
