@@ -21,6 +21,7 @@ public class FollowingArticlesRequest
     {
         _rabbitMqContext = rabbitMqContext;
         _rabbitMqContext.QueueDeclare(REPLY_Q);
+        _rabbitMqContext.QueueDeclare(REQUEST_Q);
 
         ConsumeReply();
     }
