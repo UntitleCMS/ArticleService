@@ -11,6 +11,7 @@ public static class ArticlesQueryMapper
         Filter = dto.Filter,
         Privot = dto.Privot,
         Take = dto.Take,
-        Tags = dto.Tags
+        Tags = dto.Tags,
+        OnlyFollowing = dto.OnlyFollowing
     };
 }

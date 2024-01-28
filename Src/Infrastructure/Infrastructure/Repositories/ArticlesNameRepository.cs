@@ -18,6 +18,7 @@ public class ArticlesNameRepository : IArticlesNameRepository
     {
         var posts = _context.Collection<PostCollection>();
         var res = posts.Aggregate()
+            .Match(i=>i.IsPublished == true)
             .Project(i => new
             {
                 ID = i.ID,

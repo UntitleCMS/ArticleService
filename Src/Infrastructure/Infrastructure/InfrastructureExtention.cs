@@ -1,11 +1,13 @@
 
 using Application.Common.Repositories;
+using Infrastructure.Queues;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
+using Application.Common.Queues;
 
 namespace Infrastructure;
 
@@ -32,6 +34,10 @@ public static class InfrastructureExtention
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IArticlesPageableRepository, ArticlesPageableRepository>();
         services.AddScoped<IArticlesNameRepository, ArticlesNameRepository>();
+
+        services.AddSingleton<RabbitMqContext>();
+        services.AddSingleton<FollowingArticlesRequest>();
+        services.AddSingleton<INewArticleQueue, NewArticleBus>();
         return services;
     }
 }

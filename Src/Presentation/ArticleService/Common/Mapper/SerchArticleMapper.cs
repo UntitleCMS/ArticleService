@@ -14,7 +14,7 @@ public static class SerchArticleMapper
         Privot = dto.Privot,
         Take = dto.Take,
         Tags = dto.Tags,
-        IsBookmarked = dto.IsBookmared,
+        IsBookmarked = false,
         SerchText = dto.SerchText,
     };
 }

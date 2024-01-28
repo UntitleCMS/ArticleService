@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Application.Common.models;
 using Application.Common.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using Application.Events.NewArticle;
 
 namespace Application.Features.Article.Command.AddArticle;
 
@@ -12,10 +13,12 @@ using AddPostCommandHandlerType = IRequestHandler<AddArticleCommand, IResponseWr
 public class AddArticleCommandHandler : AddPostCommandHandlerType
 {
     private readonly IPostRepository postRepo;
+    private readonly IMediator mediator;
 
-    public AddArticleCommandHandler(IPostRepository postRepo)
+    public AddArticleCommandHandler(IPostRepository postRepo, IMediator mediator)
     {
         this.postRepo = postRepo;
+        this.mediator = mediator;
     }
 
     public async Task<AddPostCommandResponseType> Handle(AddArticleCommand request, CancellationToken cancellationToken)
@@ -31,6 +34,8 @@ public class AddArticleCommandHandler : AddPostCommandHandlerType
 
         if (a.IsCompletedSuccessfully)
         {
+            _ = mediator.Send(new NewArticleEvent(post), cancellationToken);
+
             return ResponseWrapper.Ok(
                 Base64UrlEncoder.Encode(post.ID.ToByteArray()),
                 "Add post successfuly.");
