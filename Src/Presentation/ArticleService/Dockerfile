@@ -20,6 +20,7 @@ FROM build AS publish
 RUN dotnet publish "ArticleService.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+LABEL org.opencontainers.image.source = "https://github.com/UntitleCMS/ArticleService"
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ArticleService.dll"]
