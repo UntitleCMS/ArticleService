@@ -84,8 +84,8 @@ public class GetArticelsQueryHandeler : RequestPipeHandelerBase<GetArticelsQuery
             filler.After = request.Privot[1..];
         }
 
-        filler.Before?.Replace("TermsAndPolicy", "AAAAAAAAAECAAAAAAAAAAA").Replace("SupportedProgrammingLanguages","EREREREREUGREREREREREQ");
-        filler.After?.Replace("TermsAndPolicy", "AAAAAAAAAECAAAAAAAAAAA").Replace("SupportedProgrammingLanguages","EREREREREUGREREREREREQ");
+        filler.Before = filler.Before?.Replace("TermsAndPolicy", "AAAAAAAAAECAAAAAAAAAAA").Replace("SupportedProgrammingLanguages", "EREREREREUGREREREREREQ");
+        filler.After = filler.After?.Replace("TermsAndPolicy", "AAAAAAAAAECAAAAAAAAAAA").Replace("SupportedProgrammingLanguages","EREREREREUGREREREREREQ");
 
         var res = await _article.Find(filler, request.Sub);
 
