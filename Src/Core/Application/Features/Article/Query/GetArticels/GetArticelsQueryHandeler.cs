@@ -84,18 +84,21 @@ public class GetArticelsQueryHandeler : RequestPipeHandelerBase<GetArticelsQuery
             filler.After = request.Privot[1..];
         }
 
+        filler.Before?.Replace("TermsAndPolicy", "AAAAAAAAAECAAAAAAAAAAA").Replace("SupportedProgrammingLanguages","EREREREREUGREREREREREQ");
+        filler.After?.Replace("TermsAndPolicy", "AAAAAAAAAECAAAAAAAAAAA").Replace("SupportedProgrammingLanguages","EREREREREUGREREREREREQ");
+
         var res = await _article.Find(filler, request.Sub);
 
 
         // maping model
         var col = res.Collections.Select(article => new GetArticelsQueryDto()
         {
-            Id = Base64UrlEncoder.Encode(article.ID.ToByteArray()),
-            AuthorId = article.AuthorId == "AAAAAAAAAECAAAAAAAAAAA"
+            Id = Base64UrlEncoder.Encode(article.ID.ToByteArray()) == "AAAAAAAAAECAAAAAAAAAAA"
                 ? "TermsAndPolicy"
-                : article.AuthorId == "EREREREREUGREREREREREQ"
+                : Base64UrlEncoder.Encode(article.ID.ToByteArray()) == "EREREREREUGREREREREREQ"
                 ? "SupportedProgrammingLanguages"
-                : article.AuthorId,
+                : Base64UrlEncoder.Encode(article.ID.ToByteArray()),
+            AuthorId = article.AuthorId,
 
             Title = article.Title,
             CoverImage = article.Cover,
