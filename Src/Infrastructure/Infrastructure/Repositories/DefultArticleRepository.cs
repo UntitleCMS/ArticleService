@@ -39,4 +39,30 @@ public class DefaultArticleRepository : IDefaultArticleRepository
         var s = _context.Collection<PostCollection>()
             .ReplaceOne(i => i.ID == ID, newPost, options);
     }
+
+    public void AddSupportedLang()
+    {
+
+        var ID = new Guid("11111111-1111-4111-9111-111111111111");
+        DateTime dt = DateTime.Parse("01/01/2024", new CultureInfo("us"));
+
+        var newPost = new PostCollection()
+        {
+            ID = ID,
+            Title = "Supported Programming Languages",
+            Content = "{\"time\":1709369598919,\"blocks\":[{\"id\":\"d9E_9CqBZa\",\"type\":\"header\",\"data\":{\"text\":\"Python\",\"level\":2}},{\"id\":\"d0tw_dPNmq\",\"type\":\"codeBlock\",\"data\":{\"language\":\"python\",\"code\":\"print(\\\"Hello, Beta Blog...\\\")\",\"name\":\"Python 13.11.6\"}},{\"id\":\"gNhk5yGj7-\",\"type\":\"header\",\"data\":{\"text\":\"C programming\",\"level\":2}},{\"id\":\"z33tCvJORV\",\"type\":\"codeBlock\",\"data\":{\"language\":\"c\",\"code\":\"#include <stdio.h>\\r\\n\\r\\nint main(){\\r\\n    printf(\\\"Hello, C World\\\");\\r\\n    return 0;\\r\\n}\",\"name\":\"gcc 12.2.1 20220924\"}},{\"id\":\"8l2odZ6aIx\",\"type\":\"header\",\"data\":{\"text\":\"Java\",\"level\":2}},{\"id\":\"D6KDNUFwZa\",\"type\":\"codeBlock\",\"data\":{\"language\":\"java\",\"code\":\"class HelloWorld {\\r\\n    public static void main(String[] args) {\\r\\n        System.out.println(\\\"Hello, Java World!\\\"); \\r\\n    }\\r\\n}\",\"name\":\"microsoft-jdk-17.0.6\"}}],\"version\":\"2.28.2\"}"
+            ContentPreviews = "",
+            Cover = "",
+            IsPublished = true,
+            Tags = new[] { "BetaBlog", "Languages" },
+            AuthorId = "AAAAAAAAAECAAAAAAAAAAA",
+            LastUpdate = dt,
+            Timestamp = dt
+        };
+
+        var options = new ReplaceOptions { IsUpsert = true };
+        var s = _context.Collection<PostCollection>()
+            .ReplaceOne(i => i.ID == ID, newPost, options);
+    }
+
 }
