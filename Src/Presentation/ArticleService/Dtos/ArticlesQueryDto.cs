@@ -16,7 +16,8 @@ public class ArticlesQueryDto
     public int Take { set; get; } = 10;
 
     [FromQuery(Name ="from")]
-    [RegularExpression("""^[<>][A-Za-z0-9_\-\+\/]{22,24}$""", ErrorMessage = "Start with '<' for get befor, '>' for after; example '<C95KV0xhcUuD1s5HHWM4uA' or '>C95KV0xhcUuD1s5HHWM4uA'")]
+    //[RegularExpression("""^[<>][A-Za-z0-9_\-\+\/]{22,24}$""", ErrorMessage = "Start with '<' for get befor, '>' for after; example '<C95KV0xhcUuD1s5HHWM4uA' or '>C95KV0xhcUuD1s5HHWM4uA'")]
+    [RegularExpression("""^[<>].+$""", ErrorMessage = "Start with '<' for get befor, '>' for after; example '<C95KV0xhcUuD1s5HHWM4uA' or '>C95KV0xhcUuD1s5HHWM4uA'")]
     public string? Privot { set; get; }
 
     [FromQuery(Name ="of")]
