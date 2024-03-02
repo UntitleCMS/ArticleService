@@ -19,6 +19,7 @@ public class AddSystemArticles : IHostedService
         var articleRepository = scope.ServiceProvider.GetRequiredService<IDefaultArticleRepository>();
 
         articleRepository.AddTermOfServiceAndPolicy();
+        articleRepository.AddSupportedLang();
         return Task.CompletedTask;
     }
 
