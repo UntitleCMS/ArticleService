@@ -9,6 +9,7 @@ namespace Infrastructure.Repositories;
 public class DefaultArticleRepository : IDefaultArticleRepository
 {
     private DataContext _context;
+    private string AuthorID { get; } = "BETABLOG";
 
     public DefaultArticleRepository(DataContext context)
     {
@@ -30,7 +31,7 @@ public class DefaultArticleRepository : IDefaultArticleRepository
             Cover = "",
             IsPublished = true,
             Tags = new[] { "BetaBlog", "Policy", "Terms" },
-            AuthorId = "AAAAAAAAAECAAAAAAAAAAA",
+            AuthorId = AuthorID,
             LastUpdate = dt,
             Timestamp = dt
         };
@@ -55,7 +56,7 @@ public class DefaultArticleRepository : IDefaultArticleRepository
             Cover = "",
             IsPublished = true,
             Tags = new[] { "BetaBlog", "Languages" },
-            AuthorId = "AAAAAAAAAECAAAAAAAAAAA",
+            AuthorId = AuthorID,
             LastUpdate = dt,
             Timestamp = dt
         };
