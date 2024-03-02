@@ -91,7 +91,11 @@ public class GetArticelsQueryHandeler : RequestPipeHandelerBase<GetArticelsQuery
         var col = res.Collections.Select(article => new GetArticelsQueryDto()
         {
             Id = Base64UrlEncoder.Encode(article.ID.ToByteArray()),
-            AuthorId = article.AuthorId,
+            AuthorId = article.AuthorId == "AAAAAAAAAECAAAAAAAAAAA"
+                ? "TermsAndPolicy"
+                : article.AuthorId == "EREREREREUGREREREREREQ"
+                ? "SupportedProgrammingLanguages"
+                : article.AuthorId,
 
             Title = article.Title,
             CoverImage = article.Cover,

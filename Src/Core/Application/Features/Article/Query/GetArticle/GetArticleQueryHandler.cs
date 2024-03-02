@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+using Application.Common.Interfaces;
 using Application.Common.models;
 using Application.Common.Repositories;
 using MediatR;
@@ -25,7 +25,12 @@ public class GetArticleQueryHandler : GetArticleQueryHandlerType
     public async Task<GetArticleQueryResponseType> Handle(
         GetArticleQuery request, CancellationToken cancellationToken)
     {
-        var result = _repo.FindById(request.ArticleId, request.sub);
+        var result = _repo.FindById(
+                request.ArticleId == "TermsAndPolicy"
+                ? "AAAAAAAAAECAAAAAAAAAAA"
+                : request.ArticleId == "SupportedProgrammingLanguages"
+                ? "EREREREREUGREREREREREQ"
+                : request.ArticleId, request.sub);
 
         if (result.Exception is not null) return ResponseWrapper
            .Error<GetArticleQueryResponse>(result.Exception, "Not Found.");

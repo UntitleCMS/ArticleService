@@ -21,7 +21,13 @@ public class GetTopArticlesQueryHandler : RequestPipeHandelerBase<GetTopArticels
     {
         var a = _articlesNameRepository.Top(request.n)
             .Select(i => new KeyValuePair<string, string>
-                (Base64UrlEncoder.Encode(i.Key.ToByteArray()), i.Value));
+                (Base64UrlEncoder.Encode(i.Key.ToByteArray()), i.Value))
+            .Select(i => new KeyValuePair<string, string>(
+                i.Key == "AAAAAAAAAECAAAAAAAAAAA"
+                ? "TermsAndPolicy"
+                : i.Key == "EREREREREUGREREREREREQ"
+                ? "SupportedProgrammingLanguages"
+                : i.Key, i.Value));
         return Ok(a.ToList());
     }
 }

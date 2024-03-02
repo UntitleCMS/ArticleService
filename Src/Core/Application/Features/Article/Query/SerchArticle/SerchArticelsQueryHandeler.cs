@@ -48,7 +48,11 @@ public class SerchArticelsQueryHandeler : RequestPipeHandelerBase<SerchArticelsQ
         // maping model
         var col = res.Collections.Select(article => new SerchArticelsQueryDto()
         {
-            Id = Base64UrlEncoder.Encode(article.ID.ToByteArray()),
+            Id = Base64UrlEncoder.Encode(article.ID.ToByteArray()) == "AAAAAAAAAECAAAAAAAAAAA"
+                ? "TermsAndPolicy"
+                : Base64UrlEncoder.Encode(article.ID.ToByteArray()) == "EREREREREUGREREREREREQ"
+                ? "SupportedProgrammingLanguages"
+                : Base64UrlEncoder.Encode(article.ID.ToByteArray()),
             AuthorId = article.AuthorId,
 
             Title = article.Title,
