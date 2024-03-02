@@ -9,7 +9,7 @@ namespace Infrastructure.Repositories;
 public class DefaultArticleRepository : IDefaultArticleRepository
 {
     private DataContext _context;
-    private string AuthorID { get; } = "BETABLOG";
+    private string AuthorID { get; } = "AAAAAAAAAECAAAAAAAAAAA";
 
     public DefaultArticleRepository(DataContext context)
     {
