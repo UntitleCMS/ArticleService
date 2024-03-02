@@ -36,6 +36,9 @@ public class Program
             .AddInfrastructure();
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+        // Add Worker
+        builder.Services.AddHostedService<AddSystemArticles>();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

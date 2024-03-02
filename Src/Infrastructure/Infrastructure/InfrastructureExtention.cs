@@ -34,6 +34,7 @@ public static class InfrastructureExtention
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IArticlesPageableRepository, ArticlesPageableRepository>();
         services.AddScoped<IArticlesNameRepository, ArticlesNameRepository>();
+        services.AddScoped<IDefaultArticleRepository, DefaultArticleRepository>();
 
         services.AddSingleton<RabbitMqContext>();
         services.AddSingleton<FollowingArticlesRequest>();
